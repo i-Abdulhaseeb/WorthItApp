@@ -57,7 +57,7 @@ class HomeView extends GetView<HomeController> {
               style: GoogleFonts.inter(fontSize: 15, color: Colors.black54),
             ),
             const SizedBox(height: 20),
-            StartDecisionCard(onTap: controller.updateCount),
+            StartDecisionCard(onTap: controller.startDecision),
             const SizedBox(height: 20),
             Obx(
               () => MonthlySummary(

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:worthitapp/app/routes/app_routes.dart';
 
 /// Controller for Home dashboard
 class HomeController extends GetxController {
@@ -24,8 +25,7 @@ class HomeController extends GetxController {
     }
   }
 
-  void updateCount() {
-    totalDecisions.add("Haseeb");
-    print(totalDecisions);
+  void startDecision() {
+    Get.toNamed(AppRoutes.startPurchase);
   }
 }
