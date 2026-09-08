@@ -55,25 +55,25 @@ class StartPurchaseView extends GetView<PurchaseController> {
                     onTap: controller.pickImage,
                   );
                 }
-                return Image.file(File(controller.selectedImage.value!.path));
+                return Image.file(
+                  File(controller.selectedImage.value!.path),
+                  width: 200,
+                  height: 200,
+                );
               }),
               const SizedBox(height: 16),
               _OptionCard(
                 icon: Icons.edit_outlined,
                 title: 'Enter manually',
                 subtitle: 'Type the product name and brand',
-                onTap: () {
-                  // TODO: implement
-                },
+                onTap: controller.showNameDialog,
               ),
               const SizedBox(height: 16),
               _OptionCard(
                 icon: Icons.link_outlined,
                 title: 'Paste a link',
                 subtitle: 'Paste a URL from any store',
-                onTap: () {
-                  // TODO: implement
-                },
+                onTap: controller.showLinkDialog,
               ),
             ],
           ),
