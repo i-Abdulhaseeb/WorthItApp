@@ -7,8 +7,15 @@ import 'package:worthitapp/app/routes/app_routes.dart';
 class PurchaseController extends GetxController {
   final ImagePicker picker = ImagePicker();
   Rx<XFile?> selectedImage = Rx<XFile?>(null);
-  final TextEditingController productName = TextEditingController();
-  final TextEditingController productLink = TextEditingController();
+  RxString productName = ''.obs;
+  RxString productLink = ''.obs;
+  RxString productPrice = ''.obs;
+  final TextEditingController productNameController = TextEditingController();
+  final TextEditingController productLinkController = TextEditingController();
+  final TextEditingController productPriceController = TextEditingController();
+
+  final RxInt currentStep = 1.obs;
+  final int totalSteps = 4;
   Future<void> pickImage() async {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
@@ -22,7 +29,7 @@ class PurchaseController extends GetxController {
     Get.dialog(
       AlertDialog(
         title: const Text(
-          'Add product name or brand',
+          'Add product name or brand alongside the price',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
 
@@ -46,10 +53,25 @@ class PurchaseController extends GetxController {
             const SizedBox(height: 16),
 
             TextField(
-              controller: productName,
+              controller: productNameController,
               autofocus: true,
               decoration: InputDecoration(
                 hintText: 'e.g. AirPods Pro',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            TextField(
+              controller: productPriceController,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: 'e.g. 15000',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -70,11 +92,10 @@ class PurchaseController extends GetxController {
 
           ElevatedButton(
             onPressed: () {
-              final text = productName.text.trim();
-
-              if (text.isNotEmpty) {
-                Get.back(result: text);
-                print(text);
+              productName.value = productNameController.text.trim();
+              productPrice.value = productPriceController.text.trim();
+              if (productName.value.isNotEmpty) {
+                Get.back(result: productName);
                 navigateToNextScreen();
               }
             },
@@ -113,7 +134,7 @@ class PurchaseController extends GetxController {
             const SizedBox(height: 16),
 
             TextField(
-              controller: productLink,
+              controller: productLinkController,
               autofocus: true,
               decoration: InputDecoration(
                 hintText: 'e.g. https//AirPodsPro.apple.com',
@@ -137,11 +158,10 @@ class PurchaseController extends GetxController {
 
           ElevatedButton(
             onPressed: () {
-              final text = productLink.text.trim();
+              productLink.value = productLinkController.text.trim();
 
-              if (text.isNotEmpty) {
-                Get.back(result: text);
-                print(text);
+              if (productLink.value.isNotEmpty) {
+                Get.back(result: productLink);
                 navigateToNextScreen();
               }
             },
@@ -154,9 +174,10 @@ class PurchaseController extends GetxController {
   }
 
   void navigateToNextScreen() {
-    if (productLink.text != '' &&
-        productName.text != '' &&
-        selectedImage.value != null) {
+    if (productLink.value != '' &&
+        productName.value != '' &&
+        selectedImage.value != null &&
+        productPrice.value != '') {
       Get.toNamed(AppRoutes.productDetails);
     }
   }

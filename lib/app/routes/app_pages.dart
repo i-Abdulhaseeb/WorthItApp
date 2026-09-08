@@ -51,14 +51,14 @@ class AppPages {
       name: AppRoutes.startPurchase,
       page: () => const StartPurchaseView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<PurchaseController>(() => PurchaseController());
+        Get.lazyPut<PurchaseController>(() => PurchaseController(), fenix: true);
       }),
     ),
     GetPage(
       name: AppRoutes.productDetails,
       page: () => const ProductDetailsView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<PurchaseController>(() => PurchaseController());
+        Get.lazyPut<PurchaseController>(() => PurchaseController(), fenix: true);
       }),
     ),
     GetPage(
