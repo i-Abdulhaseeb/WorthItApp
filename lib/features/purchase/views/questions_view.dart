@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:worthitapp/features/purchase/controllers/purchase_controller.dart';
 
 import '../controllers/question_controller.dart';
 import '../widgets/question_option_card.dart';
@@ -65,7 +66,7 @@ class QuestionsView extends GetView<QuestionController> {
                   ),
                 ),
               ),
-              const SizedBox(width: 48), // balances the back button
+              const SizedBox(width: 48),
             ],
           ),
           const SizedBox(height: 8),
@@ -105,7 +106,7 @@ class QuestionsView extends GetView<QuestionController> {
                   children: [
                     const TextSpan(text: 'Considering: '),
                     TextSpan(
-                      text: controller.productName,
+                      text: controller.purchaseController.productName.value,
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
@@ -113,7 +114,7 @@ class QuestionsView extends GetView<QuestionController> {
               ),
             ),
             Text(
-              'Rs. ${controller.productPrice.toStringAsFixed(0)}',
+              'Rs. ${controller.purchaseController.productPrice.value}',
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
             ),
           ],
@@ -177,13 +178,20 @@ class QuestionsView extends GetView<QuestionController> {
   // NOTE: this is a UI-only placeholder calculation — swap it for your
   // real cost-per-hour logic once the finance data is wired up.
   Widget _buildComputedBanner(Question question) {
-    final price = controller.productPrice;
+    final price = controller.purchaseController.productPrice;
     final hourlyRate =
         controller.monthlyIncome / (controller.workHoursPerWeek * 4);
-    final hours = hourlyRate == 0 ? 0 : (price / hourlyRate).round();
+    final hours = hourlyRate == 0
+        ? 0
+        : (int.parse(controller.purchaseController.productPrice.value) /
+                  hourlyRate)
+              .round();
 
     final title = question.computedBanner!.titleTemplate
-        .replaceAll('{price}', 'Rs. ${price.toStringAsFixed(0)}')
+        .replaceAll(
+          '{price}',
+          'Rs. ${controller.purchaseController.productPrice}',
+        )
         .replaceAll('{hours}', '$hours');
     final subtitle = question.computedBanner!.subtitleTemplate
         .replaceAll(
@@ -264,9 +272,18 @@ class QuestionsView extends GetView<QuestionController> {
           );
           if (entered != null &&
               entered > 0 &&
-              entered < controller.productPrice) {
-            final savings = controller.productPrice - entered;
-            final percent = (savings / controller.productPrice * 100).round();
+              entered <
+                  int.parse(controller.purchaseController.productPrice.value)) {
+            final savings =
+                int.parse(controller.purchaseController.productPrice.value) -
+                entered;
+            final percent =
+                (savings /
+                        int.parse(
+                          controller.purchaseController.productPrice.value,
+                        ) *
+                        100)
+                    .round();
             savingsLabel = Text(
               'Saves Rs. ${savings.toStringAsFixed(0)} ($percent%)',
               style: const TextStyle(

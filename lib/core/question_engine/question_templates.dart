@@ -61,7 +61,7 @@ const List<Question> kDecisionFlowQuestions = [
     title: 'Do you already own something similar?',
     subtitle: 'Help us understand if this is an upgrade or a completely new purchase category for you.',
     type: QuestionType.singleSelect,
-    allowSkip: true,
+    allowSkip: false,
     options: [
       QuestionOption(
         id: 'yes',

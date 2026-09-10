@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../../core/widget/bottom_nav_bar.dart';
 import '../../features/decisions/controllers/decisions_controller.dart';
 import '../../features/decisions/views/decision_detail_view.dart';
@@ -42,23 +43,38 @@ class AppPages {
       page: () => const BottomNavBarWid(),
       binding: BindingsBuilder(() {
         Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
-        Get.lazyPut<DecisionsController>(() => DecisionsController(), fenix: true);
-        Get.lazyPut<InsightsController>(() => InsightsController(), fenix: true);
-        Get.lazyPut<SettingsController>(() => SettingsController(), fenix: true);
+        Get.lazyPut<DecisionsController>(
+          () => DecisionsController(),
+          fenix: true,
+        );
+        Get.lazyPut<InsightsController>(
+          () => InsightsController(),
+          fenix: true,
+        );
+        Get.lazyPut<SettingsController>(
+          () => SettingsController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.startPurchase,
       page: () => const StartPurchaseView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<PurchaseController>(() => PurchaseController(), fenix: true);
+        Get.lazyPut<PurchaseController>(
+          () => PurchaseController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.productDetails,
       page: () => const ProductDetailsView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<PurchaseController>(() => PurchaseController(), fenix: true);
+        Get.lazyPut<PurchaseController>(
+          () => PurchaseController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
@@ -93,35 +109,50 @@ class AppPages {
       name: AppRoutes.decisions,
       page: () => const DecisionsView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<DecisionsController>(() => DecisionsController(), fenix: true);
+        Get.lazyPut<DecisionsController>(
+          () => DecisionsController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.decisionDetail,
       page: () => const DecisionDetailView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<DecisionsController>(() => DecisionsController(), fenix: true);
+        Get.lazyPut<DecisionsController>(
+          () => DecisionsController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.insights,
       page: () => const InsightsView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<InsightsController>(() => InsightsController(), fenix: true);
+        Get.lazyPut<InsightsController>(
+          () => InsightsController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.feedback,
       page: () => const FeedbackView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<FeedbackController>(() => FeedbackController(), fenix: true);
+        Get.lazyPut<FeedbackController>(
+          () => FeedbackController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.settings,
       page: () => const SettingsView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<SettingsController>(() => SettingsController(), fenix: true);
+        Get.lazyPut<SettingsController>(
+          () => SettingsController(),
+          fenix: true,
+        );
       }),
     ),
   ];
