@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:worthitapp/app/theme/app_colors.dart';
 import 'package:worthitapp/app/theme/app_text_styles.dart';
+import 'package:worthitapp/core/question_engine/question_templates.dart';
 
 import '../controllers/purchase_controller.dart';
 
@@ -40,7 +41,7 @@ class ReviewView extends GetView<PurchaseController> {
                     const SizedBox(height: 16),
                     _buildReadinessCard(textTheme),
                     const SizedBox(height: 16),
-                    _buildCriteriaAuditCard(textTheme),
+                    _buildCriteriaAuditCard(textTheme, controller),
                     const SizedBox(height: 16),
                     _buildImpartialBanner(textTheme),
                   ],
@@ -204,40 +205,99 @@ class ReviewView extends GetView<PurchaseController> {
   // ---------------------------------------------------------------------
   // Criteria audit card
   // ---------------------------------------------------------------------
-  Widget _buildCriteriaAuditCard(TextTheme textTheme) {
-    // TODO: replace with controller-provided list
+  Widget _buildCriteriaAuditCard(
+    TextTheme textTheme,
+    PurchaseController controller,
+  ) {
+    final questionController = controller.questionController;
+
+    // ---------------------------------------------------------
+    // Helper: Get the human-readable selected option title
+    // ---------------------------------------------------------
+    String getOptionAnswer(String questionId) {
+      final answer = questionController.answerFor(questionId);
+
+      if (answer == null || answer.skipped) {
+        return 'Not answered';
+      }
+
+      if (answer.selectedOptionId == null) {
+        return answer.freeTextValue ?? 'Not answered';
+      }
+
+      final question = findQuestionById(questionId);
+
+      if (question == null) {
+        return answer.selectedOptionId!;
+      }
+
+      final selectedOption = question.options.firstWhere(
+        (option) => option.id == answer.selectedOptionId,
+        orElse: () => question.options.first,
+      );
+
+      return selectedOption.title;
+    }
+
+    // ---------------------------------------------------------
+    // Cheaper alternative
+    // ---------------------------------------------------------
+    String alternativeName = '';
+    String alternativePrice = '';
+
+    final alternativeAnswer = questionController.answerFor(
+      'cheaper_alternative',
+    );
+
+    if (alternativeAnswer != null) {
+      alternativeName =
+          alternativeAnswer.followUpValues?['alternative_name'] ?? '';
+
+      alternativePrice =
+          alternativeAnswer.followUpValues?['alternative_price'] ?? '';
+    }
+
+    // ---------------------------------------------------------
+    // Criteria
+    // ---------------------------------------------------------
     final criteria = <_CriteriaItem>[
-      const _CriteriaItem(
+      _CriteriaItem(
         icon: Icons.trending_up_rounded,
         label: 'Motivation',
-        value: "It's an upgrade",
+        value: getOptionAnswer('motivation'),
       ),
-      const _CriteriaItem(
+
+      _CriteriaItem(
         icon: Icons.inventory_2_outlined,
         label: 'Existing possession',
-        value: "Sort of — doesn't mee...",
+        value: getOptionAnswer('already_own_similar'),
       ),
-      const _CriteriaItem(
+
+      _CriteriaItem(
         icon: Icons.calendar_today_outlined,
         label: 'Expected usage',
-        value: 'Almost every day',
+        value: getOptionAnswer('usage_frequency'),
       ),
-      const _CriteriaItem(
+
+      _CriteriaItem(
         icon: Icons.compare_arrows_rounded,
         label: 'Cheaper alternative',
-        value: 'Yes — Ank...',
-        trailingValue: '(Rs. 35,000)',
+        value: getOptionAnswer('cheaper_alternative'),
+        trailingValue: alternativePrice.isNotEmpty
+            ? '(Rs. $alternativePrice)'
+            : null,
       ),
-      const _CriteriaItem(
+
+      _CriteriaItem(
         icon: Icons.timer_outlined,
         label: 'Desire & impulse',
-        value: 'A few weeks',
+        value: getOptionAnswer('how_long_wanted'),
       ),
-      const _CriteriaItem(
+
+      _CriteriaItem(
         icon: Icons.work_outline_rounded,
         label: 'Financial impact',
-        value: 'A little',
-        trailingValue: '(≈ 21 hrs work)',
+        value: getOptionAnswer('financial_impact'),
       ),
     ];
 
