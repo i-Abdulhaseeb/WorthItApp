@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:worthitapp/app/routes/app_routes.dart';
 import 'package:worthitapp/features/purchase/controllers/purchase_controller.dart';
 
 import '../../../data/models/question_model.dart';
@@ -255,7 +256,7 @@ class QuestionController extends GetxController {
       printSavedAnswers();
 
       // Later:
-      // Get.toNamed(AppRoutes.review);
+      Get.toNamed(AppRoutes.review);
 
       return;
     }

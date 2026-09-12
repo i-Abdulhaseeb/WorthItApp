@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:worthitapp/app/routes/app_routes.dart';
+import 'package:worthitapp/features/purchase/controllers/question_controller.dart';
 
 /// Controller managing the purchase evaluation workflow
 class PurchaseController extends GetxController {
@@ -13,6 +14,7 @@ class PurchaseController extends GetxController {
   final TextEditingController productNameController = TextEditingController();
   final TextEditingController productLinkController = TextEditingController();
   final TextEditingController productPriceController = TextEditingController();
+  final QuestionController questionController = Get.find<QuestionController>();
 
   final RxInt currentStep = 1.obs;
   final int totalSteps = 4;
