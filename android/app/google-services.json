@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "956241077905",
+    "project_id": "worthitapp-52fc7",
+    "storage_bucket": "worthitapp-52fc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956241077905:android:0b800cce25ecac73384130",
+        "android_client_info": {
+          "package_name": "com.example.worthitapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTbiuorSLiEh-U2LvvqXB1Syiae_K2zlI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
