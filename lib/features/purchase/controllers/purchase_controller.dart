@@ -14,7 +14,10 @@ class PurchaseController extends GetxController {
   final TextEditingController productNameController = TextEditingController();
   final TextEditingController productLinkController = TextEditingController();
   final TextEditingController productPriceController = TextEditingController();
-  final QuestionController questionController = Get.find<QuestionController>();
+  QuestionController get questionController =>
+      Get.isRegistered<QuestionController>()
+      ? Get.find<QuestionController>()
+      : Get.put(QuestionController());
 
   final RxInt currentStep = 1.obs;
   final int totalSteps = 4;

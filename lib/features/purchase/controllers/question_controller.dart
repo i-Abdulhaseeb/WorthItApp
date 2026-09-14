@@ -58,7 +58,14 @@ class QuestionController extends GetxController {
       product: ConsideredProduct(
         id: 'current_product',
         name: purchaseController.productName.value,
-        price: double.parse(purchaseController.productPrice.value),
+        price:
+            double.tryParse(
+              purchaseController.productPrice.value.replaceAll(
+                RegExp(r'[^0-9.]'),
+                '',
+              ),
+            ) ??
+            0.0,
         currency: 'Rs.',
       ),
     );

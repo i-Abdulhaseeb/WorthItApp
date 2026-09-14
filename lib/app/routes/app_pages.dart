@@ -81,14 +81,24 @@ class AppPages {
       name: AppRoutes.questions,
       page: () => const QuestionsView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<QuestionController>(() => QuestionController());
+        Get.lazyPut<QuestionController>(
+          () => QuestionController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
       name: AppRoutes.review,
       page: () => const ReviewView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<PurchaseController>(() => PurchaseController());
+        Get.lazyPut<PurchaseController>(
+          () => PurchaseController(),
+          fenix: true,
+        );
+        Get.lazyPut<QuestionController>(
+          () => QuestionController(),
+          fenix: true,
+        );
       }),
     ),
     GetPage(
