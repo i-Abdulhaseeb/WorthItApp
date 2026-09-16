@@ -1,5 +1,8 @@
 import 'dart:async';
+
 import 'package:get/get.dart';
+import 'package:worthitapp/core/services/gemini_service.dart';
+
 import '../../../app/routes/app_routes.dart';
 
 /// Status enum for each analysis check step
@@ -35,13 +38,34 @@ class AnalysisController extends GetxController {
   Timer? _animationTimer;
 
   @override
+  @override
   void onInit() {
     super.onInit();
+
     _initializeSteps();
     _startSequentialChecks();
+    testGemini();
   }
 
-  /// Initialize the 4 checklist steps with initial states
+  Future<void> testGemini() async {
+    try {
+      final model = GeminiService();
+
+      final String verdict = await model.analyzePurchase();
+
+      print('================ GEMINI RESPONSE ================');
+      print(verdict);
+      print('=================================================');
+
+      onModelResponseReceived();
+    } catch (e, stackTrace) {
+      print('================ GEMINI ERROR ===================');
+      print(e);
+      print(stackTrace);
+      print('=================================================');
+    }
+  }
+
   void _initializeSteps() {
     steps = [
       AnalysisStepItem(
@@ -125,4 +149,3 @@ class AnalysisController extends GetxController {
     super.onClose();
   }
 }
-
