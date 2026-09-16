@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:worthitapp/app/routes/app_routes.dart';
 import 'package:worthitapp/app/theme/app_colors.dart';
 import 'package:worthitapp/app/theme/app_text_styles.dart';
 import 'package:worthitapp/core/question_engine/question_templates.dart';
@@ -379,7 +380,8 @@ class ReviewView extends GetView<PurchaseController> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: controller.analyzePurchase();
+                // Navigate to analyzing screen
+                Get.toNamed(AppRoutes.analyzing);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
