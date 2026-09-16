@@ -1,12 +1,10 @@
-import 'package:get/get.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 
-/// Gemini AI Service for decision evaluation
-class GeminiService extends GetxService {
-  Future<String> evaluatePurchase({
-    required String productName,
-    required double price,
-    required Map<String, dynamic> answers,
-  }) async {
-    return 'Decision analysis result';
+class GeminiService {
+  late final GenerativeModel _generativeModel;
+  GeminiService() {
+    _generativeModel = FirebaseAI.googleAI().generativeModel(
+      model: 'gemini-3.6-flash',
+    );
   }
 }
