@@ -105,14 +105,22 @@ class AppPages {
       name: AppRoutes.analyzing,
       page: () => const AnalyzingView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<AnalysisController>(() => AnalysisController());
+        if (!Get.isRegistered<AnalysisController>()) {
+          Get.put<AnalysisController>(AnalysisController(), permanent: true);
+        }
       }),
     ),
     GetPage(
       name: AppRoutes.verdict,
       page: () => const VerdictView(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<AnalysisController>(() => AnalysisController());
+        Get.lazyPut<PurchaseController>(
+          () => PurchaseController(),
+          fenix: true,
+        );
+        if (!Get.isRegistered<AnalysisController>()) {
+          Get.put<AnalysisController>(AnalysisController(), permanent: true);
+        }
       }),
     ),
     GetPage(

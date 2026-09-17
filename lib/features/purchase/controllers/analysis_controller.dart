@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:worthitapp/core/services/gemini_service.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../widgets/analysis_dialogs.dart';
 
 /// Status enum for each analysis check step
 enum AnalysisStepStatus { pending, inProgress, done }
@@ -47,6 +48,39 @@ class AnalysisController extends GetxController {
 
   Timer? _animationTimer;
 
+  int get averageScore {
+    final sum =
+        affordability.value +
+        necessity.value +
+        value.value +
+        usage.value +
+        alternative.value +
+        impulseRisk.value;
+    return (sum / 6).round();
+  }
+
+  String get verdictDisplayName {
+    final v = verdict.value.toLowerCase().replaceAll('_', ' ').trim();
+    if (v == 'dont buy' || v == 'dont_buy') {
+      return "DON'T BUY";
+    }
+    if (v.isNotEmpty) {
+      return v.toUpperCase();
+    }
+    return "WAIT";
+  }
+
+  String get whySayingTitle {
+    final v = verdict.value.toLowerCase().replaceAll('_', ' ').trim();
+    if (v == 'dont buy' || v == 'dont_buy') {
+      return "Why we're saying don't buy";
+    }
+    if (v == 'buy') {
+      return "Why we're saying buy";
+    }
+    return "Why we're saying wait";
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -62,16 +96,16 @@ class AnalysisController extends GetxController {
 
       final String response = await model.analyzePurchase();
       final Map<String, dynamic> data = jsonDecode(response);
-      verdict.value = data['verdict'];
-      reason.value = data['reason'];
-      final Map<String, dynamic> scores = data['scores'];
-      affordability.value = scores['affordability'];
-      necessity.value = scores['necessity'];
-      value.value = scores['value'];
-      usage.value = scores['usage'];
-      alternative.value = scores['alternative'];
-      impulseRisk.value = scores['impulse_risk'];
-      recommendation.value = data['recommendation'];
+      verdict.value = data['verdict'] ?? 'wait';
+      reason.value = data['reason'] ?? '';
+      final Map<String, dynamic> scores = data['scores'] ?? {};
+      affordability.value = scores['affordability'] ?? 0;
+      necessity.value = scores['necessity'] ?? 0;
+      value.value = scores['value'] ?? 0;
+      usage.value = scores['usage'] ?? 0;
+      alternative.value = scores['alternative'] ?? 0;
+      impulseRisk.value = scores['impulse_risk'] ?? 0;
+      recommendation.value = data['recommendation'] ?? '';
       print('================ GEMINI RESPONSE ================');
       print(verdict.value);
       print(affordability.value);
@@ -83,7 +117,68 @@ class AnalysisController extends GetxController {
       print(e);
       print(stackTrace);
       print('=================================================');
+      _handleModelError(e);
     }
+  }
+
+  void _handleModelError(dynamic e) {
+    _animationTimer?.cancel();
+    final errorStr = e.toString().toLowerCase();
+
+    // Check if error is quota / daily limit reached
+    if (errorStr.contains('quota') ||
+        errorStr.contains('daily') ||
+        errorStr.contains('limit') ||
+        errorStr.contains('resource_exhausted')) {
+      showLimitReachedDialog();
+    } else {
+      // Otherwise show busy dialog (503, 429 rate limit, server busy, network, etc.)
+      showBusyDialog();
+    }
+  }
+
+  /// Displays the AI Busy popup dialog
+  void showBusyDialog() {
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+    Get.dialog(
+      AiBusyDialog(onTryAgain: retryAnalysis),
+      barrierDismissible: false,
+    );
+  }
+
+  /// Displays the Daily Limit Reached popup dialog
+  void showLimitReachedDialog() {
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+    Get.dialog(
+      LimitReachedDialog(onGotIt: navigateToHome),
+      barrierDismissible: false,
+    );
+  }
+
+  /// Retries AI analysis: resets animation steps, restarts progress, and calls Gemini
+  void retryAnalysis() {
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+    _animationTimer?.cancel();
+    progress.value = 0.15;
+    isModelResponseReceived.value = false;
+    isAnimationComplete.value = false;
+    _initializeSteps();
+    _startSequentialChecks();
+    testGemini();
+  }
+
+  /// Navigates user back to home screen
+  void navigateToHome() {
+    if (Get.isDialogOpen == true) {
+      Get.back();
+    }
+    Get.offAllNamed(AppRoutes.home);
   }
 
   void _initializeSteps() {
@@ -146,12 +241,18 @@ class AnalysisController extends GetxController {
   /// Method to call when the Gemini model response is received
   void onModelResponseReceived() {
     isModelResponseReceived.value = true;
+    _animationTimer?.cancel();
+    progress.value = 1.0;
+    for (final step in steps) {
+      step.status.value = AnalysisStepStatus.done;
+    }
+    isAnimationComplete.value = true;
     _checkAndNavigateToVerdict();
   }
 
   /// Checks if both UI animation and Gemini model response are ready before navigating
   void _checkAndNavigateToVerdict() {
-    if (isAnimationComplete.value && isModelResponseReceived.value) {
+    if (isModelResponseReceived.value) {
       Get.offNamed(AppRoutes.verdict);
     }
   }
