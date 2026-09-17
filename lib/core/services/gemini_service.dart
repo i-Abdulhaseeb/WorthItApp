@@ -42,12 +42,12 @@ class GeminiService {
     );
   }
 
-  /// Sends the prompt to Gemini and returns the JSON decision response
+ 
   Future<String> analyzePurchase({
     PurchaseController? purchaseController,
     QuestionController? questionController,
   }) async {
-    // 1. Get PurchaseController & QuestionController
+   
     final purchaseCtrl = purchaseController ?? Get.find<PurchaseController>();
     final questionCtrl =
         questionController ??
@@ -55,7 +55,7 @@ class GeminiService {
             ? Get.find<QuestionController>()
             : purchaseCtrl.questionController);
 
-    // 2. Extract product details from PurchaseController
+ 
     final String productName = purchaseCtrl.productName.value;
     final String productLink = purchaseCtrl.productLink.value;
     final String rawPrice = purchaseCtrl.productPrice.value.replaceAll(
@@ -64,7 +64,7 @@ class GeminiService {
     );
     final num productPrice = num.tryParse(rawPrice) ?? 0;
 
-    // 3. Tally user answers against their interpretations
+  
     final List<Map<String, dynamic>> answersList = [];
     const questionIds = [
       'motivation',
@@ -92,7 +92,7 @@ class GeminiService {
       }
     }
 
-    // 4. Build prompt
+  
     final prompt = buildPrompt(
       productName: productName,
       productPrice: productPrice,
@@ -100,18 +100,18 @@ class GeminiService {
       answers: answersList,
     );
 
-    // 5. Generate content with the model
+    
     final response = await _generativeModel.generateContent([
       Content.text(prompt),
     ]);
 
-    // 6. Mark check that response has been received
+    
     isResponseReceived = true;
 
     return response.text ?? "";
   }
 
-  /// Builds the complete prompt string with formatted PURCHASE DATA
+
   String buildPrompt({
     required String productName,
     required num productPrice,

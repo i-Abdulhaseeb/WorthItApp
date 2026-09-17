@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:worthitapp/core/services/gemini_service.dart';
@@ -34,10 +35,18 @@ class AnalysisController extends GetxController {
 
   // The 4 sequential analysis steps shown in the UI
   late final List<AnalysisStepItem> steps;
+  RxString verdict = "".obs;
+  RxString reason = "".obs;
+  RxInt affordability = 0.obs;
+  RxInt necessity = 0.obs;
+  RxInt value = 0.obs;
+  RxInt usage = 0.obs;
+  RxInt alternative = 0.obs;
+  RxInt impulseRisk = 0.obs;
+  RxString recommendation = "".obs;
 
   Timer? _animationTimer;
 
-  @override
   @override
   void onInit() {
     super.onInit();
@@ -51,10 +60,21 @@ class AnalysisController extends GetxController {
     try {
       final model = GeminiService();
 
-      final String verdict = await model.analyzePurchase();
-
+      final String response = await model.analyzePurchase();
+      final Map<String, dynamic> data = jsonDecode(response);
+      verdict.value = data['verdict'];
+      reason.value = data['reason'];
+      final Map<String, dynamic> scores = data['scores'];
+      affordability.value = scores['affordability'];
+      necessity.value = scores['necessity'];
+      value.value = scores['value'];
+      usage.value = scores['usage'];
+      alternative.value = scores['alternative'];
+      impulseRisk.value = scores['impulse_risk'];
+      recommendation.value = data['recommendation'];
       print('================ GEMINI RESPONSE ================');
-      print(verdict);
+      print(verdict.value);
+      print(affordability.value);
       print('=================================================');
 
       onModelResponseReceived();
@@ -132,14 +152,7 @@ class AnalysisController extends GetxController {
   /// Checks if both UI animation and Gemini model response are ready before navigating
   void _checkAndNavigateToVerdict() {
     if (isAnimationComplete.value && isModelResponseReceived.value) {
-      // =======================================================================
-      // NAVIGATION TO VERDICT SCREEN:
-      // =======================================================================
-      // When you are ready to navigate to the verdict screen after receiving the
-      // model response, perform navigation here:
-      //
-      // Get.offNamed(AppRoutes.verdict);
-      // =======================================================================
+      Get.offNamed(AppRoutes.verdict);
     }
   }
 
