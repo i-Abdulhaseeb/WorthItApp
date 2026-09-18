@@ -14,21 +14,25 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify Home tab loaded
-    expect(find.text('Good Morning'), findsOneWidget);
+    expect(find.text('Good morning'), findsOneWidget);
 
     // Tap Decisions tab
-    await tester.tap(find.byIcon(Icons.gavel));
+    await tester.tap(find.byIcon(Icons.gavel_outlined));
     await tester.pumpAndSettle();
     expect(find.text('Decisions View'), findsOneWidget);
 
     // Tap Insights tab
-    await tester.tap(find.byIcon(Icons.insights));
+    await tester.tap(find.byIcon(Icons.insights_outlined));
     await tester.pumpAndSettle();
     expect(find.text('Insights View'), findsOneWidget);
 
     // Tap Settings tab
-    await tester.tap(find.byIcon(Icons.settings));
+    await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
-    expect(find.text('Settings View'), findsOneWidget);
+    expect(find.text('Settings'), findsNWidgets(2)); // Header + BottomNav label
+    expect(find.text('Profile'), findsOneWidget);
+    expect(find.text('Alex Mercer'), findsOneWidget);
+    expect(find.text('About'), findsOneWidget);
   });
 }
+
