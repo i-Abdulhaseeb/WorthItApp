@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:worthitapp/core/storage/hive_service.dart';
 
 import 'app/bindings/initial_binding.dart';
 import 'app/routes/app_pages.dart';
@@ -19,7 +21,9 @@ Future<void> main() async {
   await FirebaseAppCheck.instance.activate(
     providerAndroid: const AndroidDebugProvider(),
   );
-
+  await Hive.initFlutter();
+  Hive.registerAdapter(SavedDecisionAdapter());
+  await Hive.openBox<SavedDecision>('decisions');
   runApp(const MyApp());
 }
 

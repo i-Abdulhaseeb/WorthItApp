@@ -181,6 +181,10 @@ class AnalysisController extends GetxController {
     Get.offAllNamed(AppRoutes.home);
   }
 
+  void getToHome() {
+    Get.offAllNamed(AppRoutes.home);
+  }
+
   void _initializeSteps() {
     steps = [
       AnalysisStepItem(
