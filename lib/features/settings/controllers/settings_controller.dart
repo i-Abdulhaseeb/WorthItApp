@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 
-/// Controller for Settings and preferences
 class SettingsController extends GetxController {
   final userName = 'Alex Mercer'.obs;
   final currency = 'USD (\$)'.obs;
@@ -31,5 +30,3 @@ class SettingsController extends GetxController {
     workingHours.value = '${hours}h / week';
   }
 }
-
-

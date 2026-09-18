@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:worthitapp/core/question_engine/answer_interpretation.dart';
 import 'package:worthitapp/features/purchase/controllers/purchase_controller.dart';
 import 'package:worthitapp/features/purchase/controllers/question_controller.dart';
+import 'package:worthitapp/features/settings/controllers/settings_controller.dart';
 
 class GeminiService {
   late final GenerativeModel _generativeModel;
@@ -53,7 +54,22 @@ class GeminiService {
         (Get.isRegistered<QuestionController>()
             ? Get.find<QuestionController>()
             : purchaseCtrl.questionController);
+    final settingsCtrl = Get.find<SettingsController>();
+    final String currencyCode = settingsCtrl.selectedCurrencyCode.value;
 
+    final String rawIncome = settingsCtrl.income.value.replaceAll(
+      RegExp(r'[^0-9.]'),
+      '',
+    );
+
+    final num monthlyIncome = num.tryParse(rawIncome) ?? 0;
+
+    final String rawWorkingHours = settingsCtrl.workingHours.value.replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
+
+    final int workingHoursPerWeek = int.tryParse(rawWorkingHours) ?? 0;
     final String productName = purchaseCtrl.productName.value;
     final String productLink = purchaseCtrl.productLink.value;
     final String rawPrice = purchaseCtrl.productPrice.value.replaceAll(
@@ -93,6 +109,9 @@ class GeminiService {
       productName: productName,
       productPrice: productPrice,
       productLink: productLink,
+      monthlyIncome: monthlyIncome,
+      currencyCode: currencyCode,
+      workingHoursPerWeek: workingHoursPerWeek,
       answers: answersList,
     );
 
@@ -109,19 +128,22 @@ class GeminiService {
     required String productName,
     required num productPrice,
     required String productLink,
+    required num monthlyIncome,
+    required String currencyCode,
+    required int workingHoursPerWeek,
     required List<Map<String, dynamic>> answers,
   }) {
     final purchaseDataJson = const JsonEncoder.withIndent('  ').convert({
       'product': {
         'name': productName,
         'price': productPrice,
-        'currency': 'PKR',
+        'currency': currencyCode,
         'link': productLink,
       },
       'user': {
-        'monthly_income': 120000,
-        'currency': 'PKR',
-        'working_hours_per_week': 40,
+        'monthly_income': monthlyIncome,
+        'currency': currencyCode,
+        'working_hours_per_week': workingHoursPerWeek,
       },
       'answers': answers,
     });
