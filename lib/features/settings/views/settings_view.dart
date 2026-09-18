@@ -3,7 +3,11 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/settings_controller.dart';
+import '../widgets/currency_popup.dart';
+import '../widgets/income_popup.dart';
+import '../widgets/name_popup.dart';
 import '../widgets/settings_tile.dart';
+import '../widgets/working_hours_popup.dart';
 
 /// Settings and preferences view
 class SettingsView extends GetView<SettingsController> {
@@ -26,16 +30,6 @@ class SettingsView extends GetView<SettingsController> {
             fontSize: 26,
           ),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(
-              Icons.account_circle_outlined,
-              size: 28,
-              color: Colors.black87,
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -85,7 +79,7 @@ class SettingsView extends GetView<SettingsController> {
                       icon: Icons.person_outline_rounded,
                       title: "Name",
                       value: controller.userName.value,
-                      onTap: () {},
+                      onTap: () => NamePopup.show(context),
                     ),
                     const Divider(
                       height: 1,
@@ -96,7 +90,7 @@ class SettingsView extends GetView<SettingsController> {
                       icon: Icons.payments_outlined,
                       title: "Currency",
                       value: controller.currency.value,
-                      onTap: () {},
+                      onTap: () => CurrencyPopup.show(context),
                     ),
                     const Divider(
                       height: 1,
@@ -107,7 +101,7 @@ class SettingsView extends GetView<SettingsController> {
                       icon: Icons.account_balance_wallet_outlined,
                       title: "Income",
                       value: controller.income.value,
-                      onTap: () {},
+                      onTap: () => IncomePopup.show(context),
                     ),
                     const Divider(
                       height: 1,
@@ -118,7 +112,7 @@ class SettingsView extends GetView<SettingsController> {
                       icon: Icons.access_time_rounded,
                       title: "Working hours",
                       value: controller.workingHours.value,
-                      onTap: () {},
+                      onTap: () => WorkingHoursPopup.show(context),
                     ),
                   ],
                 ),
