@@ -8,7 +8,7 @@ class SavedDecision extends HiveObject {
   final String productName;
 
   @HiveField(1)
-  final double productPrice;
+  final String productPrice;
 
   @HiveField(2)
   final String? imagePath;

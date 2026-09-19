@@ -73,9 +73,9 @@ class VerdictView extends GetView<AnalysisController> {
               const SizedBox(height: 24),
 
               // 5. "Save the Decision" Action Button (No-op placeholder)
-              _buildDecisionButton('Save the decision', controller),
+              _buildDecisionButton('Save the decision', controller, 0),
               const SizedBox(height: 24),
-              _buildDecisionButton('Return to home', controller),
+              _buildDecisionButton('Return to home', controller, 1),
               const SizedBox(height: 24),
             ],
           ),
@@ -450,7 +450,11 @@ class VerdictView extends GetView<AnalysisController> {
   // ---------------------------------------------------------------------------
   // 5. "Save the Decision" Button (No-op action for now)
   // ---------------------------------------------------------------------------
-  Widget _buildDecisionButton(String text, AnalysisController controller) {
+  Widget _buildDecisionButton(
+    String text,
+    AnalysisController controller,
+    int check,
+  ) {
     return Container(
       width: double.infinity,
       height: 54,
@@ -470,7 +474,9 @@ class VerdictView extends GetView<AnalysisController> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: controller.getToHome,
+          onTap: () {
+            check == 0 ? controller.saveDecision() : controller.getToHome();
+          },
           child: Center(
             child: Text(
               text,

@@ -18,7 +18,7 @@ class SavedDecisionAdapter extends TypeAdapter<SavedDecision> {
     };
     return SavedDecision(
       productName: fields[0] as String,
-      productPrice: fields[1] as double,
+      productPrice: fields[1] as String,
       imagePath: fields[2] as String?,
       decidedAt: fields[3] as DateTime,
       verdict: fields[4] as String,

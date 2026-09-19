@@ -2,7 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:worthitapp/core/services/gemini_service.dart';
+import 'package:worthitapp/core/services/image_service.dart';
+import 'package:worthitapp/core/storage/hive_service.dart';
+import 'package:worthitapp/features/purchase/controllers/purchase_controller.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../widgets/analysis_dialogs.dart';
@@ -34,7 +38,6 @@ class AnalysisController extends GetxController {
   // Track if UI sequential animation has finished all 4 steps
   final RxBool isAnimationComplete = false.obs;
 
-  // The 4 sequential analysis steps shown in the UI
   late final List<AnalysisStepItem> steps;
   RxString verdict = "".obs;
   RxString reason = "".obs;
@@ -45,6 +48,7 @@ class AnalysisController extends GetxController {
   RxInt alternative = 0.obs;
   RxInt impulseRisk = 0.obs;
   RxString recommendation = "".obs;
+  final purchaseCtrl = Get.find<PurchaseController>();
 
   Timer? _animationTimer;
 
@@ -173,7 +177,31 @@ class AnalysisController extends GetxController {
     testGemini();
   }
 
-  /// Navigates user back to home screen
+  Future<void> saveDecision() async {
+    final box = Hive.box<SavedDecision>('decisions');
+    final savedImagePath = await saveProductImage(
+      purchaseCtrl.selectedImage.value,
+    );
+    final decision = SavedDecision(
+      productName: purchaseCtrl.productName.value,
+      productPrice: purchaseCtrl.productPrice.value,
+      imagePath: savedImagePath,
+      decidedAt: DateTime.now(),
+      verdict: verdict.value,
+      reason: reason.value,
+      recommendation: recommendation.value,
+      affordability: affordability.value,
+      necessity: necessity.value,
+      value: value.value,
+      usage: usage.value,
+      alternative: alternative.value,
+      impulseRisk: impulseRisk.value,
+    );
+    await box.add(decision);
+
+    Get.offNamed(AppRoutes.home);
+  }
+
   void navigateToHome() {
     if (Get.isDialogOpen == true) {
       Get.back();
