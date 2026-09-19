@@ -59,11 +59,7 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(height: 20),
             StartDecisionCard(onTap: controller.startDecision),
             const SizedBox(height: 20),
-            Obx(
-              () => MonthlySummary(
-                decisions: controller.totalDecisions.length.toString(),
-              ),
-            ),
+            MonthlySummary(decisions: "0"),
             const SizedBox(height: 24),
             Text(
               "Recent Decisions",

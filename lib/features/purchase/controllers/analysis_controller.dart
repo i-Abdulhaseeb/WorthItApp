@@ -6,6 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:worthitapp/core/services/gemini_service.dart';
 import 'package:worthitapp/core/services/image_service.dart';
 import 'package:worthitapp/core/storage/hive_service.dart';
+import 'package:worthitapp/features/home/controllers/home_controller.dart';
 import 'package:worthitapp/features/purchase/controllers/purchase_controller.dart';
 
 import '../../../app/routes/app_routes.dart';
@@ -38,7 +39,28 @@ class AnalysisController extends GetxController {
   // Track if UI sequential animation has finished all 4 steps
   final RxBool isAnimationComplete = false.obs;
 
-  late final List<AnalysisStepItem> steps;
+  final List<AnalysisStepItem> steps = [
+    AnalysisStepItem(
+      title: 'Understanding purchase',
+      subtitle: "Analyzing what you're buying and why",
+      initialStatus: AnalysisStepStatus.inProgress,
+    ),
+    AnalysisStepItem(
+      title: 'Checking affordability',
+      subtitle: 'Assessing impact on your budget',
+      initialStatus: AnalysisStepStatus.pending,
+    ),
+    AnalysisStepItem(
+      title: 'Comparing alternatives',
+      subtitle: 'Looking at similar options and prices',
+      initialStatus: AnalysisStepStatus.pending,
+    ),
+    AnalysisStepItem(
+      title: 'Evaluating long-term value',
+      subtitle: 'Considering durability, utility and future needs',
+      initialStatus: AnalysisStepStatus.pending,
+    ),
+  ];
   RxString verdict = "".obs;
   RxString reason = "".obs;
   RxInt affordability = 0.obs;
@@ -89,7 +111,7 @@ class AnalysisController extends GetxController {
   void onInit() {
     super.onInit();
 
-    _initializeSteps();
+    _resetSteps();
     _startSequentialChecks();
     testGemini();
   }
@@ -169,10 +191,9 @@ class AnalysisController extends GetxController {
       Get.back();
     }
     _animationTimer?.cancel();
-    progress.value = 0.15;
     isModelResponseReceived.value = false;
     isAnimationComplete.value = false;
-    _initializeSteps();
+    _resetSteps();
     _startSequentialChecks();
     testGemini();
   }
@@ -198,8 +219,10 @@ class AnalysisController extends GetxController {
       impulseRisk: impulseRisk.value,
     );
     await box.add(decision);
-
-    Get.offNamed(AppRoutes.home);
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().loadDecisions();
+    }
+    Get.offAllNamed(AppRoutes.home);
   }
 
   void navigateToHome() {
@@ -213,30 +236,12 @@ class AnalysisController extends GetxController {
     Get.offAllNamed(AppRoutes.home);
   }
 
-  void _initializeSteps() {
-    steps = [
-      AnalysisStepItem(
-        title: 'Understanding purchase',
-        subtitle: "Analyzing what you're buying and why",
-        initialStatus: AnalysisStepStatus.inProgress,
-      ),
-      AnalysisStepItem(
-        title: 'Checking affordability',
-        subtitle: 'Assessing impact on your budget',
-        initialStatus: AnalysisStepStatus.pending,
-      ),
-      AnalysisStepItem(
-        title: 'Comparing alternatives',
-        subtitle: 'Looking at similar options and prices',
-        initialStatus: AnalysisStepStatus.pending,
-      ),
-      AnalysisStepItem(
-        title: 'Evaluating long-term value',
-        subtitle: 'Considering durability, utility and future needs',
-        initialStatus: AnalysisStepStatus.pending,
-      ),
-    ];
-    // Start initial progress for step 1
+  void _resetSteps() {
+    for (int i = 0; i < steps.length; i++) {
+      steps[i].status.value = i == 0
+          ? AnalysisStepStatus.inProgress
+          : AnalysisStepStatus.pending;
+    }
     progress.value = 0.15;
   }
 
