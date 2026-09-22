@@ -1,36 +1,24 @@
-import 'dart:async';
-
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:worthitapp/app/routes/app_routes.dart';
 import 'package:worthitapp/core/storage/hive_service.dart';
 import 'package:worthitapp/data/models/saved_decision_model.dart';
 
-/// Controller for Home dashboard
+/// Controller for Home dashboard.
 class HomeController extends GetxController {
   RxString greeting = 'Good Morning'.obs;
+
   final RxList<SavedDecisionModel> savedLists = <SavedDecisionModel>[].obs;
-  StreamSubscription? _boxSubscription;
 
   @override
   void onInit() {
     super.onInit();
+
     updateGreeting();
-    loadDecisions();
-    _listenToBoxChanges();
-  }
 
-  @override
-  void onReady() {
-    super.onReady();
-    loadDecisions();
-  }
-
-  void _listenToBoxChanges() {
-    final box = Hive.box<SavedDecision>('decisions');
-    _boxSubscription = box.watch().listen((_) {
+    if (savedLists.isEmpty) {
       loadDecisions();
-    });
+    }
   }
 
   void loadDecisions() {
@@ -45,9 +33,11 @@ class HomeController extends GetxController {
 
     print('================ SAVED DECISIONS (HOME) ================');
     print('Total count: ${savedLists.length}');
+
     for (int i = 0; i < savedLists.length; i++) {
       print('[$i] ${savedLists[i]}');
     }
+
     print('========================================================');
   }
 
@@ -67,11 +57,5 @@ class HomeController extends GetxController {
 
   void startDecision() {
     Get.toNamed(AppRoutes.startPurchase);
-  }
-
-  @override
-  void onClose() {
-    _boxSubscription?.cancel();
-    super.onClose();
   }
 }
