@@ -42,15 +42,20 @@ class AppPages {
       name: AppRoutes.home,
       page: () => const BottomNavBarWid(),
       binding: BindingsBuilder(() {
-        Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+        if (!Get.isRegistered<HomeController>()) {
+          Get.put<HomeController>(HomeController(), permanent: true);
+        }
+
         Get.lazyPut<DecisionsController>(
           () => DecisionsController(),
           fenix: true,
         );
+
         Get.lazyPut<InsightsController>(
           () => InsightsController(),
           fenix: true,
         );
+
         Get.lazyPut<SettingsController>(
           () => SettingsController(),
           fenix: true,
