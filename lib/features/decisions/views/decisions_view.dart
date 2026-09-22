@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:worthitapp/data/models/saved_decision_model.dart';
 
 import '../controllers/decisions_controller.dart';
@@ -9,139 +12,377 @@ class DecisionsView extends GetView<DecisionsController> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Your decisions'),
+        centerTitle: false,
+        titleSpacing: 20,
+        title: Text(
+          'Your decisions',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: colors.onSurface,
+          ),
+        ),
       ),
       body: SafeArea(
         top: false,
         bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
+        child: Obx(() {
+          final sections = controller.sections;
 
-            // Category filters.
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Obx(() {
-                final selected = controller.selectedCategory.value;
-
-                return Row(
-                  children: controller.categories.map((category) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        right: category == controller.categories.last ? 0 : 10,
+          return CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'See what you bought, skipped, or decided to wait on.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
                       ),
-                      child: _CategoryChip(
-                        label: category,
-                        selected: selected == category,
-                        onTap: () => controller.selectCategory(category),
+                      const SizedBox(height: 18),
+                      _SummaryCard(controller: controller),
+                      const SizedBox(height: 18),
+                      _CategoryFilters(controller: controller),
+                      const SizedBox(height: 12),
+                      _SearchAndSort(controller: controller),
+                      const SizedBox(height: 22),
+                    ],
+                  ),
+                ),
+              ),
+
+              if (sections.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyState(
+                    hasSavedDecisions: controller.totalCount > 0,
+                  ),
+                ),
+
+              for (final section in sections) ...[
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 20, 10),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      section.title,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colors.outline,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
                       ),
-                    );
-                  }).toList(),
-                );
-              }),
-            ),
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final decision = section.decisions[index];
 
-            const SizedBox(height: 28),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _DecisionTile(
+                          decision: decision,
+                          dateLabel: controller.formatDate(decision.decidedAt),
+                          onTap: () => controller.onDecisionTap(decision),
+                        ),
+                      );
+                    }, childCount: section.decisions.length),
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 18)),
+              ],
 
-            Expanded(
-              child: Obx(() {
-                final decisions = controller.filteredDecisions;
-
-                if (decisions.isEmpty) {
-                  return _EmptyDecisions(
-                    category: controller.selectedCategory.value,
-                  );
-                }
-
-                return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                  itemCount: decisions.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final decision = decisions[index];
-
-                    return _DecisionTile(
-                      decision: decision,
-                      dateLabel: controller.formatDate(decision.decidedAt),
-                      onTap: () => controller.onDecisionTap(decision),
-                    );
-                  },
-                );
-              }),
-            ),
-          ],
-        ),
+              const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            ],
+          );
+        }),
       ),
     );
   }
 }
 
-class _CategoryChip extends StatelessWidget {
-  const _CategoryChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({required this.controller});
 
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
+  final DecisionsController controller;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            constraints: const BoxConstraints(minHeight: 44),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            decoration: BoxDecoration(
-              color: selected ? colors.inverseSurface : colors.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: selected ? colors.inverseSurface : colors.outlineVariant,
-                width: 1,
-              ),
-              boxShadow: selected
-                  ? [
-                      BoxShadow(
-                        color: colors.inverseSurface.withOpacity(0.18),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Center(
-              child: Text(
-                label,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: selected
-                      ? colors.onInverseSurface
-                      : colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.1,
+    return Obx(() {
+      final bought = controller.countFor('buy');
+      final avoided = controller.countFor('dont_buy');
+      final waiting = controller.countFor('wait');
+
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Total',
+                    value: controller.totalCount,
+                    footer: 'All logs',
+                    color: colors.onSurface,
+                  ),
                 ),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Bought',
+                    value: bought,
+                    footer: controller.percentageFor(bought),
+                    color: colors.primary,
+                    icon: Icons.check_circle_outline_rounded,
+                  ),
+                ),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Avoided',
+                    value: avoided,
+                    footer: controller.percentageFor(avoided),
+                    color: colors.error,
+                    icon: Icons.cancel_outlined,
+                  ),
+                ),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Waiting',
+                    value: waiting,
+                    footer: controller.percentageFor(waiting),
+                    color: colors.tertiary,
+                    icon: Icons.schedule_rounded,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class _SummaryMetric extends StatelessWidget {
+  const _SummaryMetric({
+    required this.label,
+    required this.value,
+    required this.footer,
+    required this.color,
+    this.icon,
+  });
+
+  final String label;
+  final int value;
+  final String footer;
+  final Color color;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 3,
+            children: [
+              if (icon != null) Icon(icon, size: 12, color: color),
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            '$value',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            footer,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryFilters extends StatelessWidget {
+  const _CategoryFilters({required this.controller});
+
+  final DecisionsController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Obx(() {
+        final selected = controller.selectedCategory.value;
+
+        return Row(
+          children: controller.categories.map((category) {
+            final active = selected == category;
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ChoiceChip(
+                label: Text(category),
+                selected: active,
+                showCheckmark: false,
+                onSelected: (_) => controller.selectCategory(category),
+                selectedColor: colors.primary,
+                backgroundColor: theme.cardTheme.color,
+                side: BorderSide(
+                  color: active
+                      ? colors.primary
+                      : colors.outlineVariant.withValues(alpha: 0.4),
+                ),
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(horizontal: 7),
+                labelStyle: theme.textTheme.labelMedium?.copyWith(
+                  color: active ? colors.onPrimary : colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+              ),
+            );
+          }).toList(),
+        );
+      }),
+    );
+  }
+}
+
+class _SearchAndSort extends StatelessWidget {
+  const _SearchAndSort({required this.controller});
+
+  final DecisionsController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: TextField(
+            controller: controller.searchController,
+            onChanged: controller.updateSearch,
+            style: theme.textTheme.bodySmall,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: 'Search decisions...',
+              prefixIcon: Icon(
+                Icons.search_rounded,
+                size: 21,
+                color: colors.outline,
+              ),
+              suffixIcon: Obx(
+                () => controller.searchQuery.value.isEmpty
+                    ? const SizedBox.shrink()
+                    : IconButton(
+                        tooltip: 'Clear search',
+                        onPressed: controller.clearSearch,
+                        icon: const Icon(Icons.close_rounded, size: 18),
+                      ),
+              ),
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 48,
               ),
             ),
           ),
         ),
-      ),
+        const SizedBox(width: 8),
+        Obx(
+          () => PopupMenuButton<bool>(
+            tooltip: 'Sort decisions',
+            initialValue: controller.newestFirst.value,
+            onSelected: controller.setSort,
+            itemBuilder: (_) => [
+              CheckedPopupMenuItem(
+                value: true,
+                checked: controller.newestFirst.value,
+                child: const Text('Newest first'),
+              ),
+              CheckedPopupMenuItem(
+                value: false,
+                checked: !controller.newestFirst.value,
+                child: const Text('Oldest first'),
+              ),
+            ],
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 48),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: theme.cardTheme.color,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colors.outlineVariant.withValues(alpha: 0.4),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.swap_vert_rounded,
+                    size: 18,
+                    color: colors.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    controller.newestFirst.value ? 'Newest' : 'Oldest',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -162,83 +403,79 @@ class _DecisionTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final metadataStyle = theme.textTheme.bodyMedium?.copyWith(
-      color: colors.onSurfaceVariant,
-      fontWeight: FontWeight.w500,
-    );
-
-    return Material(
-      color: colors.surface,
-      borderRadius: BorderRadius.circular(16),
+    return Card(
       clipBehavior: Clip.antiAlias,
-      elevation: 0,
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.outlineVariant.withOpacity(0.6)),
-            boxShadow: [
-              BoxShadow(
-                color: colors.shadow.withOpacity(0.04),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      decision.productName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colors.onSurface,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                      ),
-                    ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Keep the badge below the text on very narrow layouts.
+              final compact = constraints.maxWidth < 310;
+              final badge = _VerdictBadge(verdict: decision.verdict);
 
-                    const SizedBox(height: 6),
-
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+              return Row(
+                children: [
+                  _DecisionImage(
+                    path: decision.imagePath,
+                    productName: decision.productName,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(decision.productPrice, style: metadataStyle),
-                        ExcludeSemantics(
-                          child: Icon(
-                            Icons.circle,
-                            size: 4,
-                            color: colors.outlineVariant,
+                        Text(
+                          decision.productName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: colors.onSurface,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        Text(dateLabel, style: metadataStyle),
+                        const SizedBox(height: 5),
+                        Wrap(
+                          spacing: 7,
+                          runSpacing: 3,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              decision.productPrice,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '•',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.outlineVariant,
+                              ),
+                            ),
+                            Text(
+                              dateLabel,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.outline,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (compact) ...[const SizedBox(height: 8), badge],
                       ],
                     ),
-
-                    const SizedBox(height: 14),
-
-                    _VerdictBadge(verdict: decision.verdict),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 8),
-
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colors.outline,
-                size: 22,
-              ),
-            ],
+                  ),
+                  if (!compact) ...[const SizedBox(width: 10), badge],
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 20,
+                    color: colors.outlineVariant,
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -258,50 +495,159 @@ class _VerdictBadge extends StatelessWidget {
 
     final Color color;
     final String label;
+    final IconData icon;
 
     switch (verdict.trim().toLowerCase()) {
       case 'buy':
         color = colors.primary;
         label = 'BUY';
+        icon = Icons.check_rounded;
         break;
-
       case 'dont_buy':
         color = colors.error;
         label = "DON'T BUY";
+        icon = Icons.close_rounded;
         break;
-
       case 'wait':
         color = colors.tertiary;
         label = 'WAIT';
+        icon = Icons.schedule_rounded;
         break;
-
       default:
         color = colors.onSurfaceVariant;
         label = verdict.replaceAll('_', ' ').toUpperCase();
+        icon = Icons.help_outline_rounded;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
+        color: color.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: color.withValues(alpha: 0.16)),
       ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelMedium?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.3,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DecisionImage extends StatefulWidget {
+  const _DecisionImage({required this.path, required this.productName});
+
+  final String? path;
+  final String productName;
+
+  @override
+  State<_DecisionImage> createState() => _DecisionImageState();
+}
+
+class _DecisionImageState extends State<_DecisionImage> {
+  Future<Uint8List?>? _imageBytes;
+
+  bool get _isNetwork {
+    final path = widget.path?.trim() ?? '';
+    return path.startsWith('https://') || path.startsWith('http://');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _prepareImage();
+  }
+
+  @override
+  void didUpdateWidget(covariant _DecisionImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.path != widget.path) {
+      _prepareImage();
+    }
+  }
+
+  void _prepareImage() {
+    final path = widget.path?.trim();
+
+    _imageBytes = path == null || path.isEmpty || _isNetwork
+        ? null
+        : _readImage(path);
+  }
+
+  Future<Uint8List?> _readImage(String path) async {
+    try {
+      return await XFile(path).readAsBytes();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Widget _placeholder(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return ColoredBox(
+      color: colors.primary.withValues(alpha: 0.06),
+      child: Center(
+        child: Icon(Icons.image_outlined, size: 23, color: colors.outline),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      image: true,
+      label: widget.productName,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 52,
+          height: 52,
+          child: _isNetwork
+              ? Image.network(
+                  widget.path!.trim(),
+                  fit: BoxFit.cover,
+                  excludeFromSemantics: true,
+                  errorBuilder: (_, __, ___) => _placeholder(context),
+                )
+              : FutureBuilder<Uint8List?>(
+                  future: _imageBytes,
+                  builder: (context, snapshot) {
+                    final bytes = snapshot.data;
+
+                    if (bytes == null || bytes.isEmpty) {
+                      return _placeholder(context);
+                    }
+
+                    return Image.memory(
+                      bytes,
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                      errorBuilder: (_, __, ___) => _placeholder(context),
+                    );
+                  },
+                ),
         ),
       ),
     );
   }
 }
 
-class _EmptyDecisions extends StatelessWidget {
-  const _EmptyDecisions({required this.category});
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.hasSavedDecisions});
 
-  final String category;
+  final bool hasSavedDecisions;
 
   @override
   Widget build(BuildContext context) {
@@ -309,48 +655,34 @@ class _EmptyDecisions extends StatelessWidget {
     final colors = theme.colorScheme;
 
     return Center(
-      child: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: colors.surfaceVariant.withOpacity(0.5),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.receipt_long_outlined,
-                size: 32,
-                color: colors.outline,
-              ),
+            Icon(
+              hasSavedDecisions
+                  ? Icons.search_off_rounded
+                  : Icons.receipt_long_outlined,
+              size: 40,
+              color: colors.outline,
             ),
-
-            const SizedBox(height: 18),
-
+            const SizedBox(height: 14),
             Text(
-              category == 'All'
-                  ? 'No decisions yet'
-                  : 'No decisions in this category',
+              hasSavedDecisions ? 'No matching decisions' : 'No decisions yet',
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
-                color: colors.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),
-
             const SizedBox(height: 8),
-
             Text(
-              category == 'All'
-                  ? 'Your saved purchase decisions will appear here.'
-                  : 'Try another filter to see your saved decisions.',
+              hasSavedDecisions
+                  ? 'Try another search or category.'
+                  : 'Your saved purchase decisions will appear here.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
-                height: 1.4,
               ),
             ),
           ],
