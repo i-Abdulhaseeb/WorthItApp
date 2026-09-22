@@ -135,6 +135,24 @@ class InsightsView extends GetView<InsightsController> {
   }
 }
 
+/// Shared soft-elevation look for every panel on this screen: a near-flat
+/// white surface, a hairline border, and a wide, low-opacity shadow instead
+/// of Material's default hard elevation shadow.
+BoxDecoration _panelDecoration(ColorScheme colors) {
+  return BoxDecoration(
+    color: colors.surface,
+    borderRadius: BorderRadius.circular(22),
+    border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.4)),
+    boxShadow: [
+      BoxShadow(
+        color: colors.shadow.withValues(alpha: 0.05),
+        blurRadius: 24,
+        offset: const Offset(0, 10),
+      ),
+    ],
+  );
+}
+
 class _MonthlySummary extends StatelessWidget {
   const _MonthlySummary({
     required this.total,
@@ -151,7 +169,8 @@ class _MonthlySummary extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Card(
+    return Container(
+      decoration: _panelDecoration(colors),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -193,7 +212,7 @@ class _MonthlySummary extends StatelessWidget {
               iconColor: colors.primary,
               valueColor: colors.primary,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             _MetricRow(
               icon: Icons.pause_circle_outline_rounded,
               label: 'Delayed/Rejected',
@@ -229,11 +248,13 @@ class _MetricRow extends StatelessWidget {
     final colors = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: colors.onSurface.withValues(alpha: 0.035),
-        borderRadius: BorderRadius.circular(9),
-        border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.5)),
+        color: colors.onSurface.withValues(alpha: 0.045),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: colors.outlineVariant.withValues(alpha: 0.35),
+        ),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -301,7 +322,8 @@ class _BreakdownCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Card(
+    return Container(
+      decoration: _panelDecoration(colors),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -333,7 +355,7 @@ class _BreakdownCard extends StatelessWidget {
                       buyColor: colors.primary,
                       waitColor: InsightsView.waitColor,
                       dontBuyColor: InsightsView.dontBuyColor,
-                      trackColor: colors.onSurface.withValues(alpha: 0.07),
+                      trackColor: colors.onSurface.withValues(alpha: 0.08),
                     ),
                     child: Center(
                       child: ExcludeSemantics(
@@ -414,7 +436,7 @@ class _VerdictDonutPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const strokeWidth = 18.0;
+    const strokeWidth = 20.0;
     final center = Offset(size.width / 2, size.height / 2);
     final radius = (math.min(size.width, size.height) - strokeWidth) / 2;
     final rect = Rect.fromCircle(center: center, radius: radius);
@@ -513,7 +535,9 @@ class _InsightCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Card(
+    return Container(
+      decoration: _panelDecoration(colors),
+      clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
           Positioned(
