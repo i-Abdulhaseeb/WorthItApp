@@ -59,7 +59,7 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(height: 20),
             StartDecisionCard(onTap: controller.startDecision),
             const SizedBox(height: 20),
-            MonthlySummary(decisions: "0"),
+            MonthlySummary(decisions: controller.totalDecisions.toString()),
             const SizedBox(height: 24),
             Text(
               "Recent Decisions",

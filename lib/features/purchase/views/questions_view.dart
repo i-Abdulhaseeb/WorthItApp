@@ -7,11 +7,9 @@ import '../../../data/models/question_model.dart';
 
 class QuestionsView extends GetView<QuestionController> {
   const QuestionsView({super.key});
-
   static const _green = Color(0xFF0E6E4E);
   static const _bg = Color(0xFFFBF4EE);
   static const _border = Color(0xFFE5E0D8);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +36,6 @@ class QuestionsView extends GetView<QuestionController> {
   }
 
   // ---- Header -------------------------------------------------------
-
   Widget _buildHeader(Question question) {
     final progress =
         (controller.currentStep.value + 1) / controller.steps.length;
@@ -123,7 +120,6 @@ class QuestionsView extends GetView<QuestionController> {
   }
 
   // ---- Body -----------------------------------------------------------
-
   Widget _buildQuestionBody(Question question) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +181,6 @@ class QuestionsView extends GetView<QuestionController> {
         : (int.parse(controller.purchaseController.productPrice.value) /
                   hourlyRate)
               .round();
-
     final title = question.computedBanner!.titleTemplate
         .replaceAll(
           '{price}',
@@ -198,7 +193,6 @@ class QuestionsView extends GetView<QuestionController> {
           'Rs. ${controller.monthlyIncome.toStringAsFixed(0)}',
         )
         .replaceAll('{workHoursPerWeek}', '${controller.workHoursPerWeek}');
-
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(14),
@@ -293,7 +287,6 @@ class QuestionsView extends GetView<QuestionController> {
             );
           }
         }
-
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Column(
@@ -350,6 +343,7 @@ class QuestionsView extends GetView<QuestionController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
+                key: ValueKey(question.id),
                 controller: controller.textControllerFor(question.id),
                 maxLines: 4,
                 maxLength: question.maxLength,
@@ -430,7 +424,6 @@ class QuestionsView extends GetView<QuestionController> {
   }
 
   // ---- Bottom bar -------------------------------------------------------
-
   Widget _buildBottomBar(Question question) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),

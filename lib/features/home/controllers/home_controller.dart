@@ -21,6 +21,20 @@ class HomeController extends GetxController {
     }
   }
 
+  List<SavedDecisionModel> get monthlyDecisions {
+    final now = DateTime.now();
+
+    return savedLists.where((decision) {
+      final date = decision.decidedAt.toLocal();
+
+      return date.year == now.year && date.month == now.month;
+    }).toList();
+  }
+
+  String normalizeVerdict(String verdict) => verdict.trim().toLowerCase();
+
+  int get totalDecisions => monthlyDecisions.length;
+
   void loadDecisions() {
     final box = Hive.box<SavedDecision>('decisions');
 
