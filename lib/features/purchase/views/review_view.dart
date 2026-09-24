@@ -5,6 +5,7 @@ import 'package:worthitapp/app/theme/app_colors.dart';
 import 'package:worthitapp/app/theme/app_text_styles.dart';
 import 'package:worthitapp/core/question_engine/question_templates.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../controllers/purchase_controller.dart';
 
 /// Pre-analysis review view
@@ -14,6 +15,7 @@ class ReviewView extends GetView<PurchaseController> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final horizontalPad = Responsive.horizontalPadding(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -22,9 +24,14 @@ class ReviewView extends GetView<PurchaseController> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        title: Text(
-          'Review answers',
-          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        title: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
+            child: Text(
+              'Review answers',
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
         ),
       ),
       body: SafeArea(
@@ -32,20 +39,23 @@ class ReviewView extends GetView<PurchaseController> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(textTheme),
-                    const SizedBox(height: 20),
-                    _buildTargetPurchaseCard(textTheme),
-                    const SizedBox(height: 16),
-                    _buildReadinessCard(textTheme),
-                    const SizedBox(height: 16),
-                    _buildCriteriaAuditCard(textTheme, controller),
-                    const SizedBox(height: 16),
-                    _buildImpartialBanner(textTheme),
-                  ],
+                padding: EdgeInsets.fromLTRB(horizontalPad, 16, horizontalPad, 24),
+                child: ResponsiveCenter(
+                  maxWidth: Responsive.maxContentWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(textTheme),
+                      const SizedBox(height: 20),
+                      _buildTargetPurchaseCard(textTheme),
+                      const SizedBox(height: 16),
+                      _buildReadinessCard(textTheme),
+                      const SizedBox(height: 16),
+                      _buildCriteriaAuditCard(textTheme, controller),
+                      const SizedBox(height: 16),
+                      _buildImpartialBanner(textTheme),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -285,7 +295,9 @@ class ReviewView extends GetView<PurchaseController> {
         label: 'Cheaper alternative',
         value: getOptionAnswer('cheaper_alternative'),
         trailingValue: alternativePrice.isNotEmpty
-            ? '(Rs. $alternativePrice)'
+            ? (alternativeName.isNotEmpty
+                ? '($alternativeName: Rs. $alternativePrice)'
+                : '(Rs. $alternativePrice)')
             : null,
       ),
 
@@ -368,42 +380,46 @@ class ReviewView extends GetView<PurchaseController> {
   // ---------------------------------------------------------------------
   Widget _buildBottomAction(BuildContext context, TextTheme textTheme) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       decoration: BoxDecoration(
         color: AppColors.background,
         border: Border(top: BorderSide(color: AppColors.borderLight, width: 1)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Navigate to analyzing screen
-                Get.toNamed(AppRoutes.analyzing);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.auto_awesome_rounded, size: 18),
-                  SizedBox(width: 8),
-                  Text('Analyze my purchase'),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 18),
-                ],
+      child: ResponsiveCenter(
+        maxWidth: Responsive.maxContentWidth,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to analyzing screen
+                  Get.toNamed(AppRoutes.analyzing);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.auto_awesome_rounded, size: 18),
+                    SizedBox(width: 8),
+                    Text('Analyze my purchase'),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_rounded, size: 18),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "We'll use your answers to give you an objective recommendation.",
-            textAlign: TextAlign.center,
-            style: AppTextStyles.bodySm.copyWith(
-              color: AppColors.onSurfaceVariant,
+            const SizedBox(height: 10),
+            Text(
+              "We'll use your answers to give you an objective recommendation.",
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodySm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

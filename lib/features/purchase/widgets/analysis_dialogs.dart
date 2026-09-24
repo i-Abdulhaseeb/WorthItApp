@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:worthitapp/core/utils/responsive.dart';
 
 /// Popup dialog shown when the AI model is temporarily busy/overloaded
 class AiBusyDialog extends StatelessWidget {
@@ -13,19 +14,22 @@ class AiBusyDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Responsive.maxDialogWidth),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 24,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
-          ],
-        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -173,7 +177,9 @@ class AiBusyDialog extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 }
 
@@ -441,180 +447,185 @@ class LimitReachedDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // 1. Top Illustration (Circular ring with moon + resting + hourglass)
-            const _LimitReachedIllustration(),
-            const SizedBox(height: 18),
-
-            // 2. Status Badge Pill
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF6B7280),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Daily limit reached · Resets soon',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF4B5563),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // 3. Title
-            Text(
-              'WorthIt needs a little recharge',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 19,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF111827),
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            // 4. Description
-            Text(
-              "You've made quite a few decisions with us. Our AI has reached its current evaluation limit, but we'll be ready to help again later.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF6B7280),
-                height: 1.45,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // 5. Progress Safe Notice Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFBBF7D0), width: 1),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF059669),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.bookmark_added_rounded,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Your progress is safe',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF065F46),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          "Nothing you've entered will be lost. Come back later and continue where you left off.",
-                          style: GoogleFonts.inter(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF047857),
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // 6. Action Button: "Got it"
-            Container(
-              width: double.infinity,
-              height: 48,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF10B981), Color(0xFF059669)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Responsive.maxDialogWidth),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 24,
+                  offset: const Offset(0, 10),
                 ),
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF059669).withValues(alpha: 0.28),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 1. Top Illustration (Circular ring with moon + resting + hourglass)
+                const _LimitReachedIllustration(),
+                const SizedBox(height: 18),
+
+                // 2. Status Badge Pill
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
                   ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: onGotIt,
-                  child: Center(
-                    child: Text(
-                      'Got it',
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF6B7280),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Daily limit reached · Resets soon',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF4B5563),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // 3. Title
+                Text(
+                  'WorthIt needs a little recharge',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF111827),
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // 4. Description
+                Text(
+                  "You've made quite a few decisions with us. Our AI has reached its current evaluation limit, but we'll be ready to help again later.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF6B7280),
+                    height: 1.45,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // 5. Progress Safe Notice Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0FDF4),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFBBF7D0), width: 1),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF059669),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.bookmark_added_rounded,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Your progress is safe',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF065F46),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              "Nothing you've entered will be lost. Come back later and continue where you left off.",
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w400,
+                                color: const Color(0xFF047857),
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+
+                // 6. Action Button: "Got it"
+                Container(
+                  width: double.infinity,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF10B981), Color(0xFF059669)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF059669).withValues(alpha: 0.28),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: onGotIt,
+                      child: Center(
+                        child: Text(
+                          'Got it',
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

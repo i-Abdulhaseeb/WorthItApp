@@ -7,6 +7,7 @@ import 'package:worthitapp/features/purchase/widgets/evaluation_progress.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../core/utils/responsive.dart';
 import '../controllers/purchase_controller.dart';
 
 /// Product details view matching the design reference with user-specified modifications.
@@ -15,6 +16,8 @@ class ProductDetailsView extends GetView<PurchaseController> {
 
   @override
   Widget build(BuildContext context) {
+    final horizontalPad = Responsive.horizontalPadding(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -28,10 +31,12 @@ class ProductDetailsView extends GetView<PurchaseController> {
             // Scrollable Content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                padding: EdgeInsets.fromLTRB(horizontalPad, 4, horizontalPad, 24),
+                child: ResponsiveCenter(
+                  maxWidth: Responsive.maxContentWidth,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     // Step indicator and Status
                     EvaluationProgress(purchaseController: controller),
                     const SizedBox(height: 8),
@@ -184,36 +189,45 @@ class ProductDetailsView extends GetView<PurchaseController> {
                     const SizedBox(height: 20),
 
                     // Three Decision Aspect Cards
-                    Row(
-                      children: [
-                        _buildFeatureCard(
-                          icon: Icons.psychology_outlined,
-                          title: 'Urge Check',
-                          subtitle: 'Identify\nemotional\nimpulse',
-                        ),
-                        const SizedBox(width: 10),
-                        _buildFeatureCard(
-                          icon: Icons.inventory_2_outlined,
-                          title: 'Current Gear',
-                          subtitle: 'Examine\nredundancies',
-                        ),
-                        const SizedBox(width: 10),
-                        _buildFeatureCard(
-                          icon: Icons.savings_outlined,
-                          title: 'True Utility',
-                          subtitle: 'Cost per\ndaily use',
-                        ),
-                      ],
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Row(
+                          children: [
+                            _buildFeatureCard(
+                              context: context,
+                              icon: Icons.psychology_outlined,
+                              title: 'Urge Check',
+                              subtitle: 'Identify\nemotional\nimpulse',
+                            ),
+                            const SizedBox(width: 8),
+                            _buildFeatureCard(
+                              context: context,
+                              icon: Icons.inventory_2_outlined,
+                              title: 'Current Gear',
+                              subtitle: 'Examine\nredundancies',
+                            ),
+                            const SizedBox(width: 8),
+                            _buildFeatureCard(
+                              context: context,
+                              icon: Icons.savings_outlined,
+                              title: 'True Utility',
+                              subtitle: 'Cost per\ndaily use',
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     const SizedBox(height: 32),
                   ],
                 ),
               ),
             ),
+          ),
 
-            // Bottom Actions & Privacy Section
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+          // Bottom Actions & Privacy Section
+          ResponsiveCenter(
+            maxWidth: Responsive.maxContentWidth,
+              padding: EdgeInsets.fromLTRB(horizontalPad, 8, horizontalPad, 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -254,7 +268,7 @@ class ProductDetailsView extends GetView<PurchaseController> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
                   // Privacy text with lock icon
                   Row(
@@ -266,13 +280,17 @@ class ProductDetailsView extends GetView<PurchaseController> {
                         color: Color(0xFF6B7280),
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        'YOUR RESPONSES REMAIN PRIVATE ON DEVICE',
-                        style: GoogleFonts.inter(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          color: const Color(0xFF6B7280),
+                      Flexible(
+                        child: Text(
+                          'YOUR RESPONSES REMAIN PRIVATE ON DEVICE',
+                          style: GoogleFonts.inter(
+                            fontSize: Responsive.isCompact(context) ? 9.5 : 10.5,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                            color: const Color(0xFF6B7280),
+                          ),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -287,13 +305,19 @@ class ProductDetailsView extends GetView<PurchaseController> {
   }
 
   Widget _buildFeatureCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
   }) {
+    final isCompact = Responsive.isCompact(context);
+
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+        padding: EdgeInsets.symmetric(
+          vertical: isCompact ? 14 : 18,
+          horizontal: isCompact ? 4 : 8,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -309,26 +333,26 @@ class ProductDetailsView extends GetView<PurchaseController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 28, color: AppColors.primary),
-            const SizedBox(height: 12),
+            Icon(icon, size: isCompact ? 24 : 28, color: AppColors.primary),
+            const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                fontSize: 13,
+                fontSize: isCompact ? 11.5 : 13,
                 fontWeight: FontWeight.w700,
                 color: AppColors.onSurface,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
               subtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                fontSize: 11,
+                fontSize: isCompact ? 10 : 11,
                 fontWeight: FontWeight.w400,
                 color: const Color(0xFF6B7280),
-                height: 1.3,
+                height: 1.25,
               ),
             ),
           ],

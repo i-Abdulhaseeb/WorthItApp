@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:worthitapp/app/theme/app_colors.dart';
 import 'package:worthitapp/app/theme/app_text_styles.dart';
+import 'package:worthitapp/core/utils/responsive.dart';
 import '../controllers/analysis_controller.dart';
 
 /// Loading / AI evaluation in-progress view
@@ -15,56 +16,62 @@ class AnalyzingView extends GetView<AnalysisController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 8),
-              // Top Brand Header (No back arrow as requested)
-              _buildBrandHeader(),
-              const SizedBox(height: 24),
+        child: ResponsiveCenter(
+          maxWidth: Responsive.maxContentWidth,
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.horizontalPadding(context),
+            vertical: 16,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 8),
+                // Top Brand Header (No back arrow as requested)
+                _buildBrandHeader(),
+                const SizedBox(height: 24),
 
-              // Title and Subtitle
-              Text(
-                'Analyzing your purchase',
-                textAlign: TextAlign.center,
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.onSurface,
+                // Title and Subtitle
+                Text(
+                  'Analyzing your purchase',
+                  textAlign: TextAlign.center,
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.onSurface,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Give us a moment — we're running the numbers,\nchecking the details, and looking at the bigger picture.",
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodySm.copyWith(
-                  color: AppColors.onSurfaceVariant,
-                  height: 1.4,
+                const SizedBox(height: 8),
+                Text(
+                  "Give us a moment — we're running the numbers,\nchecking the details, and looking at the bigger picture.",
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodySm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    height: 1.4,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // Center Illustration (Paper + Magnifying Glass + Orbits)
-              const _AnalyzingIllustration(),
-              const SizedBox(height: 24),
+                // Center Illustration (Paper + Magnifying Glass + Orbits)
+                const _AnalyzingIllustration(),
+                const SizedBox(height: 24),
 
-              // Section Divider: "ANALYZING WHAT MATTERS"
-              _buildSectionDivider(),
-              const SizedBox(height: 16),
+                // Section Divider: "ANALYZING WHAT MATTERS"
+                _buildSectionDivider(),
+                const SizedBox(height: 16),
 
-              // Progress Bar and Percentage
-              _buildProgressBar(),
-              const SizedBox(height: 20),
+                // Progress Bar and Percentage
+                _buildProgressBar(),
+                const SizedBox(height: 20),
 
-              // Checklist Card (4 sequential steps)
-              _buildChecklistCard(textTheme),
-              const SizedBox(height: 20),
+                // Checklist Card (4 sequential steps)
+                _buildChecklistCard(textTheme),
+                const SizedBox(height: 20),
 
-              // Bottom Quote / Value Banner
-              _buildBottomBanner(),
-              const SizedBox(height: 16),
-            ],
+                // Bottom Quote / Value Banner
+                _buildBottomBanner(),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),

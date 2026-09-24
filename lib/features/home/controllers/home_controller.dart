@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:worthitapp/app/routes/app_routes.dart';
@@ -45,14 +46,14 @@ class HomeController extends GetxController {
           .reversed,
     );
 
-    print('================ SAVED DECISIONS (HOME) ================');
-    print('Total count: ${savedLists.length}');
+    debugPrint('================ SAVED DECISIONS (HOME) ================');
+    debugPrint('Total count: ${savedLists.length}');
 
     for (int i = 0; i < savedLists.length; i++) {
-      print('[$i] ${savedLists[i]}');
+      debugPrint('[$i] ${savedLists[i]}');
     }
 
-    print('========================================================');
+    debugPrint('========================================================');
   }
 
   void updateGreeting() {

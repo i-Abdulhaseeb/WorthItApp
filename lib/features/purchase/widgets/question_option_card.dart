@@ -32,7 +32,7 @@ class QuestionOptionCard extends StatelessWidget {
       duration: const Duration(milliseconds: 150),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isSelected ? _green.withOpacity(0.06) : Colors.white,
+        color: isSelected ? _green.withValues(alpha: 0.06) : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isSelected ? _green : _border,
@@ -57,7 +57,7 @@ class QuestionOptionCard extends StatelessWidget {
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? _green.withOpacity(0.12)
+                              ? _green.withValues(alpha: 0.12)
                               : _chipBg,
                           borderRadius: BorderRadius.circular(10),
                         ),

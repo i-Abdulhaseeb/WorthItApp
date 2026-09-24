@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../controllers/insights_controller.dart';
 
 class InsightsView extends GetView<InsightsController> {
@@ -16,17 +17,24 @@ class InsightsView extends GetView<InsightsController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final horizontalPad = Responsive.horizontalPadding(context);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(
-          'INSIGHTS',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: colors.primary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1,
+        title: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
+            child: Text(
+              'INSIGHTS',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: colors.primary,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1,
+              ),
+            ),
           ),
         ),
       ),
@@ -34,29 +42,33 @@ class InsightsView extends GetView<InsightsController> {
         top: false,
         bottom: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Your spending\npatterns',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineLarge?.copyWith(
-                  color: colors.onSurface,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
-                  letterSpacing: -0.8,
+          padding: EdgeInsets.fromLTRB(horizontalPad, 20, horizontalPad, 28),
+          child: ResponsiveCenter(
+            maxWidth: Responsive.maxContentWidth,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Your spending\npatterns',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    color: colors.onSurface,
+                    fontWeight: FontWeight.w800,
+                    fontSize: Responsive.isCompact(context) ? 24 : 28,
+                    height: 1.2,
+                    letterSpacing: -0.8,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Based on your past decisions.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
+                const SizedBox(height: 14),
+                Text(
+                  'Based on your past decisions.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    fontSize: Responsive.isCompact(context) ? 14 : 16,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 34),
+                const SizedBox(height: 28),
 
               Obx(
                 () => _MonthlySummary(
@@ -131,8 +143,9 @@ class InsightsView extends GetView<InsightsController> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 /// Shared soft-elevation look for every panel on this screen: a near-flat

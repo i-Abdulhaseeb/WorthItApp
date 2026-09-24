@@ -1,7 +1,7 @@
-/// answer_model.dart
-///
-/// Defines the schema for storing user answers to the "Should I Buy It?"
-/// decision-flow questions (see question_model.dart / question_templates.dart).
+// answer_model.dart
+//
+// Defines the schema for storing user answers to the "Should I Buy It?"
+// decision-flow questions (see question_model.dart / question_templates.dart).
 
 import 'question_model.dart';
 

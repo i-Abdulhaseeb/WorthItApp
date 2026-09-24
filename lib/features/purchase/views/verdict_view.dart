@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:worthitapp/app/theme/app_colors.dart';
+import 'package:worthitapp/core/utils/responsive.dart';
 import 'package:worthitapp/features/purchase/controllers/analysis_controller.dart';
 import 'package:worthitapp/features/purchase/controllers/purchase_controller.dart';
 
@@ -30,12 +31,17 @@ class VerdictView extends GetView<AnalysisController> {
           ),
           onPressed: () => Get.back(),
         ),
-        title: Text(
-          'Verdict',
-          style: GoogleFonts.inter(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: AppColors.primaryEmerald,
+        title: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: Responsive.maxContentWidth,
+          ),
+          child: Text(
+            'Verdict',
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.primaryEmerald,
+            ),
           ),
         ),
         centerTitle: true,
@@ -51,33 +57,39 @@ class VerdictView extends GetView<AnalysisController> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 1. Verdict Top Section (Title, Verdict Text, Average Score Badge)
-              _buildVerdictHeader(),
-              const SizedBox(height: 24),
+        child: ResponsiveCenter(
+          maxWidth: Responsive.maxContentWidth,
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.horizontalPadding(context),
+            vertical: 12,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 1. Verdict Top Section (Title, Verdict Text, Average Score Badge)
+                _buildVerdictHeader(),
+                const SizedBox(height: 24),
 
-              // 2. Target Product Summary Card (Name, Price, Image)
-              _buildProductSummaryCard(),
-              const SizedBox(height: 16),
+                // 2. Target Product Summary Card (Name, Price, Image)
+                _buildProductSummaryCard(),
+                const SizedBox(height: 16),
 
-              // 3. Dynamic "Why we're saying {verdict}" Card
-              _buildWhyWeAreSayingCard(),
-              const SizedBox(height: 24),
+                // 3. Dynamic "Why we're saying {verdict}" Card
+                _buildWhyWeAreSayingCard(),
+                const SizedBox(height: 24),
 
-              // 4. "Verdict Factors" Header & Breakdown Card
-              _buildVerdictFactorsSection(),
-              const SizedBox(height: 24),
+                // 4. "Verdict Factors" Header & Breakdown Card
+                _buildVerdictFactorsSection(),
+                const SizedBox(height: 24),
 
-              // 5. "Save the Decision" Action Button (No-op placeholder)
-              _buildDecisionButton('Save the decision', controller, 0),
-              const SizedBox(height: 24),
-              _buildDecisionButton('Return to home', controller, 1),
-              const SizedBox(height: 24),
-            ],
+                // 5. "Save the Decision" Action Button (No-op placeholder)
+                _buildDecisionButton('Save the decision', controller, 0),
+                const SizedBox(height: 24),
+                _buildDecisionButton('Return to home', controller, 1),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),

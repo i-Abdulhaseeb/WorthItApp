@@ -51,35 +51,47 @@ class _BottomNavBarWidState extends State<BottomNavBarWid> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: SafeArea(
+          top: false,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    activeIcon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.gavel_outlined),
+                    activeIcon: Icon(Icons.gavel),
+                    label: 'Decisions',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.insights_outlined),
+                    activeIcon: Icon(Icons.insights),
+                    label: 'Insights',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings_outlined),
+                    activeIcon: Icon(Icons.settings),
+                    label: 'Settings',
+                  ),
+                ],
+                currentIndex: _selectedIndex,
+                selectedItemColor: const Color.fromARGB(255, 38, 102, 40),
+                unselectedItemColor: const Color(0xFF666666),
+                onTap: _onItemTapped,
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.gavel_outlined),
-            activeIcon: Icon(Icons.gavel),
-            label: 'Decisions',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.insights_outlined),
-            activeIcon: Icon(Icons.insights),
-            label: 'Insights',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 38, 102, 40),
-        unselectedItemColor: const Color(0xFF666666),
-        onTap: _onItemTapped,
+        ),
       ),
       body: _pageOptions.elementAt(_selectedIndex),
     );

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:worthitapp/app/theme/app_colors.dart';
 import 'package:worthitapp/app/theme/app_text_styles.dart';
 
+import '../../../core/utils/responsive.dart';
 import '../controllers/purchase_controller.dart';
 
 class StartPurchaseView extends GetView<PurchaseController> {
@@ -12,70 +13,89 @@ class StartPurchaseView extends GetView<PurchaseController> {
 
   @override
   Widget build(BuildContext context) {
+    final horizontalPad = Responsive.horizontalPadding(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Verdict',
-          style: AppTextStyles.textTheme.titleLarge?.copyWith(
-            color: AppColors.primaryEmerald,
-            fontWeight: FontWeight.w800,
+        title: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
+            child: Text(
+              'Verdict',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.textTheme.titleLarge?.copyWith(
+                color: AppColors.primaryEmerald,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'What are you thinking about buying?',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.onSurface,
-                  height: 1.15,
+          padding: EdgeInsets.fromLTRB(horizontalPad, 24, horizontalPad, 32),
+          child: ResponsiveCenter(
+            maxWidth: Responsive.maxContentWidth,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'What are you thinking about buying?',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: Responsive.isCompact(context) ? 22 : 26,
+                    color: AppColors.onSurface,
+                    height: 1.15,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                "Give us the basics. We'll ask the important questions next.",
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyLg.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                const SizedBox(height: 12),
+                Text(
+                  "Give us the basics. We'll ask the important questions next.",
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyLg.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    fontSize: Responsive.isCompact(context) ? 14 : 16,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              Obx(() {
-                if (controller.selectedImage.value == null) {
-                  return _OptionCard(
-                    icon: Icons.camera_alt_outlined,
-                    title: 'Upload a photo',
-                    subtitle: 'Choose a photo from gallery',
-                    onTap: controller.pickImage,
+                const SizedBox(height: 32),
+                Obx(() {
+                  if (controller.selectedImage.value == null) {
+                    return _OptionCard(
+                      icon: Icons.camera_alt_outlined,
+                      title: 'Upload a photo',
+                      subtitle: 'Choose a photo from gallery',
+                      onTap: controller.pickImage,
+                    );
+                  }
+                  return Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(controller.selectedImage.value!.path),
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   );
-                }
-                return Image.file(
-                  File(controller.selectedImage.value!.path),
-                  width: 200,
-                  height: 200,
-                );
-              }),
-              const SizedBox(height: 16),
-              _OptionCard(
-                icon: Icons.edit_outlined,
-                title: 'Enter manually',
-                subtitle: 'Type the product name and brand',
-                onTap: controller.showNameDialog,
-              ),
-              const SizedBox(height: 16),
-              _OptionCard(
-                icon: Icons.link_outlined,
-                title: 'Paste a link',
-                subtitle: 'Paste a URL from any store',
-                onTap: controller.showLinkDialog,
-              ),
-            ],
+                }),
+                const SizedBox(height: 16),
+                _OptionCard(
+                  icon: Icons.edit_outlined,
+                  title: 'Enter manually',
+                  subtitle: 'Type the product name and brand',
+                  onTap: controller.showNameDialog,
+                ),
+                const SizedBox(height: 16),
+                _OptionCard(
+                  icon: Icons.link_outlined,
+                  title: 'Paste a link',
+                  subtitle: 'Paste a URL from any store',
+                  onTap: controller.showLinkDialog,
+                ),
+              ],
+            ),
           ),
         ),
       ),
