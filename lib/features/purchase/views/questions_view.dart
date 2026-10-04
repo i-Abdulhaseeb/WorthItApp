@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/utils/responsive.dart';
 import '../controllers/question_controller.dart';
 import '../widgets/question_option_card.dart';
 import '../../../data/models/question_model.dart';
@@ -11,11 +10,8 @@ class QuestionsView extends GetView<QuestionController> {
   static const _green = Color(0xFF0E6E4E);
   static const _bg = Color(0xFFFBF4EE);
   static const _border = Color(0xFFE5E0D8);
-
   @override
   Widget build(BuildContext context) {
-    final horizontalPad = Responsive.horizontalPadding(context);
-
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
@@ -23,21 +19,12 @@ class QuestionsView extends GetView<QuestionController> {
           final question = controller.currentQuestion;
           return Column(
             children: [
-              ResponsiveCenter(
-                maxWidth: Responsive.maxContentWidth,
-                child: _buildHeader(question),
-              ),
-              ResponsiveCenter(
-                maxWidth: Responsive.maxContentWidth,
-                child: _buildConsideringChip(),
-              ),
+              _buildHeader(question),
+              _buildConsideringChip(),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(horizontalPad, 16, horizontalPad, 24),
-                  child: ResponsiveCenter(
-                    maxWidth: Responsive.maxContentWidth,
-                    child: _buildQuestionBody(question, context),
-                  ),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                  child: _buildQuestionBody(question),
                 ),
               ),
               _buildBottomBar(question),
@@ -133,7 +120,7 @@ class QuestionsView extends GetView<QuestionController> {
   }
 
   // ---- Body -----------------------------------------------------------
-  Widget _buildQuestionBody(Question question, BuildContext context) {
+  Widget _buildQuestionBody(Question question) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -151,8 +138,8 @@ class QuestionsView extends GetView<QuestionController> {
         ],
         Text(
           question.title,
-          style: TextStyle(
-            fontSize: Responsive.isCompact(context) ? 22 : 26,
+          style: const TextStyle(
+            fontSize: 26,
             fontWeight: FontWeight.w800,
             height: 1.2,
           ),
@@ -186,6 +173,7 @@ class QuestionsView extends GetView<QuestionController> {
   // NOTE: this is a UI-only placeholder calculation — swap it for your
   // real cost-per-hour logic once the finance data is wired up.
   Widget _buildComputedBanner(Question question) {
+    final price = controller.purchaseController.productPrice;
     final hourlyRate =
         controller.monthlyIncome / (controller.workHoursPerWeek * 4);
     final hours = hourlyRate == 0
@@ -218,7 +206,7 @@ class QuestionsView extends GetView<QuestionController> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _green.withValues(alpha: 0.1),
+              color: _green.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.schedule, color: _green, size: 20),
@@ -438,60 +426,56 @@ class QuestionsView extends GetView<QuestionController> {
   // ---- Bottom bar -------------------------------------------------------
   Widget _buildBottomBar(Question question) {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       decoration: const BoxDecoration(
         color: _bg,
         border: Border(top: BorderSide(color: _border)),
       ),
-      child: ResponsiveCenter(
-        maxWidth: Responsive.maxContentWidth,
-        child: Column(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: controller.canContinue ? controller.nextStep : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _green,
-                  disabledBackgroundColor: _green.withValues(alpha: 0.4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+      child: Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: controller.canContinue ? controller.nextStep : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _green,
+                disabledBackgroundColor: _green.withOpacity(0.4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      question.isOptional ? 'Continue to Review' : 'Continue',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.arrow_forward,
-                      size: 18,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    question.isOptional ? 'Continue to Review' : 'Continue',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                ],
               ),
             ),
-            if (question.allowSkip || question.isOptional) ...[
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: controller.skipStep,
-                child: Text(
-                  question.isOptional ? 'Skip for now' : 'Skip this question',
-                ),
+          ),
+          if (question.allowSkip || question.isOptional) ...[
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: controller.skipStep,
+              child: Text(
+                question.isOptional ? 'Skip for now' : 'Skip this question',
               ),
-            ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

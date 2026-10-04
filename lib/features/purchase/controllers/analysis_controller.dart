@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:worthitapp/core/services/gemini_service.dart';
@@ -148,17 +147,17 @@ class AnalysisController extends GetxController {
 
       recommendation.value = data['recommendation'] ?? '';
 
-      debugPrint('================ GEMINI RESPONSE ================');
-      debugPrint(verdict.value);
-      debugPrint('${affordability.value}');
-      debugPrint('=================================================');
+      print('================ GEMINI RESPONSE ================');
+      print(verdict.value);
+      print(affordability.value);
+      print('=================================================');
 
       onModelResponseReceived();
     } catch (e, stackTrace) {
-      debugPrint('================ GEMINI ERROR ===================');
-      debugPrint('$e');
-      debugPrint('$stackTrace');
-      debugPrint('=================================================');
+      print('================ GEMINI ERROR ===================');
+      print(e);
+      print(stackTrace);
+      print('=================================================');
 
       _handleModelError(e);
     }

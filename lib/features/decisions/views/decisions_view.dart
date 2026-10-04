@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:worthitapp/data/models/saved_decision_model.dart';
 
-import '../../../core/utils/responsive.dart';
 import '../controllers/decisions_controller.dart';
 
 class DecisionsView extends GetView<DecisionsController> {
@@ -15,108 +14,99 @@ class DecisionsView extends GetView<DecisionsController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final horizontalPad = Responsive.horizontalPadding(context);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
-        titleSpacing: horizontalPad,
-        title: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
-            child: Text(
-              'Your decisions',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: colors.onSurface,
-              ),
-            ),
+        titleSpacing: 20,
+        title: Text(
+          'Your decisions',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: colors.onSurface,
           ),
         ),
       ),
       body: SafeArea(
         top: false,
         bottom: false,
-        child: ResponsiveCenter(
-          maxWidth: Responsive.maxContentWidth,
-          child: Obx(() {
-            final sections = controller.sections;
+        child: Obx(() {
+          final sections = controller.sections;
 
-            return CustomScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(horizontalPad, 0, horizontalPad, 0),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'See what you bought, skipped, or decided to wait on.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
+          return CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'See what you bought, skipped, or decided to wait on.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
                         ),
-                        const SizedBox(height: 18),
-                        _SummaryCard(controller: controller),
-                        const SizedBox(height: 18),
-                        _CategoryFilters(controller: controller),
-                        const SizedBox(height: 12),
-                        _SearchAndSort(controller: controller),
-                        const SizedBox(height: 22),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 18),
+                      _SummaryCard(controller: controller),
+                      const SizedBox(height: 18),
+                      _CategoryFilters(controller: controller),
+                      const SizedBox(height: 12),
+                      _SearchAndSort(controller: controller),
+                      const SizedBox(height: 22),
+                    ],
+                  ),
+                ),
+              ),
+
+              if (sections.isEmpty)
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyState(
+                    hasSavedDecisions: controller.totalCount > 0,
                   ),
                 ),
 
-                if (sections.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _EmptyState(
-                      hasSavedDecisions: controller.totalCount > 0,
-                    ),
-                  ),
-
-                for (final section in sections) ...[
-                  SliverPadding(
-                    padding: EdgeInsets.fromLTRB(horizontalPad + 2, 0, horizontalPad, 10),
-                    sliver: SliverToBoxAdapter(
-                      child: Text(
-                        section.title,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.outline,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.8,
-                        ),
+              for (final section in sections) ...[
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(22, 0, 20, 10),
+                  sliver: SliverToBoxAdapter(
+                    child: Text(
+                      section.title,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colors.outline,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
                       ),
                     ),
                   ),
-                  SliverPadding(
-                    padding: EdgeInsets.symmetric(horizontal: horizontalPad - 4),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final decision = section.decisions[index];
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final decision = section.decisions[index];
 
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: _DecisionTile(
-                            decision: decision,
-                            dateLabel: controller.formatDate(decision.decidedAt),
-                            onTap: () => controller.onDecisionTap(decision),
-                          ),
-                        );
-                      }, childCount: section.decisions.length),
-                    ),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _DecisionTile(
+                          decision: decision,
+                          dateLabel: controller.formatDate(decision.decidedAt),
+                          onTap: () => controller.onDecisionTap(decision),
+                        ),
+                      );
+                    }, childCount: section.decisions.length),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                ],
-
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 18)),
               ],
-            );
-          }),
-        ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 12)),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -629,7 +619,7 @@ class _DecisionImageState extends State<_DecisionImage> {
                   widget.path!.trim(),
                   fit: BoxFit.cover,
                   excludeFromSemantics: true,
-                  errorBuilder: (_, _, _) => _placeholder(context),
+                  errorBuilder: (_, __, ___) => _placeholder(context),
                 )
               : FutureBuilder<Uint8List?>(
                   future: _imageBytes,
@@ -644,7 +634,7 @@ class _DecisionImageState extends State<_DecisionImage> {
                       bytes,
                       fit: BoxFit.cover,
                       excludeFromSemantics: true,
-                      errorBuilder: (_, _, _) => _placeholder(context),
+                      errorBuilder: (_, __, ___) => _placeholder(context),
                     );
                   },
                 ),

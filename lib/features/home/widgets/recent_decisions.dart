@@ -84,54 +84,41 @@ class _DecisionTile extends StatelessWidget {
         // Add navigation later.
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isVeryCompact = constraints.maxWidth < 320;
-            final badge = _VerdictBadge(verdict: decision.verdict);
-
-            return Row(
-              children: [
-                _ProductImage(path: decision.imagePath),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        decision.productName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        decision.productPrice,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontSize: 13.5,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      if (isVeryCompact) ...[
-                        const SizedBox(height: 6),
-                        badge,
-                      ],
-                    ],
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+        child: Row(
+          children: [
+            _ProductImage(path: decision.imagePath),
+            const SizedBox(width: 18),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    decision.productName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
-                ),
-                if (!isVeryCompact) ...[
-                  const SizedBox(width: 10),
-                  badge,
+                  const SizedBox(height: 3),
+                  Text(
+                    decision.productPrice,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
-              ],
-            );
-          },
+              ),
+            ),
+            const SizedBox(width: 12),
+            _VerdictBadge(verdict: decision.verdict),
+          ],
         ),
       ),
     );
@@ -205,7 +192,7 @@ class _ProductImageState extends State<_ProductImage> {
                       width: 46,
                       height: 46,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => placeholder,
+                      errorBuilder: (_, __, ___) => placeholder,
                     );
                   },
                 ),

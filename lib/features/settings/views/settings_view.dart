@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/utils/responsive.dart';
+
 import '../controllers/settings_controller.dart';
 import '../widgets/currency_popup.dart';
 import '../widgets/income_popup.dart';
@@ -15,8 +15,6 @@ class SettingsView extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    final horizontalPad = Responsive.horizontalPadding(context);
-
     return Scaffold(
       backgroundColor: const Color(0xFFFBF8F5),
       appBar: AppBar(
@@ -24,40 +22,31 @@ class SettingsView extends GetView<SettingsController> {
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: Responsive.maxContentWidth),
-            child: Text(
-              "Verdict",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.playfairDisplay(
-                color: const Color.fromARGB(255, 39, 116, 41),
-                fontWeight: FontWeight.bold,
-                fontSize: 26,
-              ),
-            ),
+        title: Text(
+          "Verdict",
+          style: GoogleFonts.playfairDisplay(
+            color: const Color.fromARGB(255, 39, 116, 41),
+            fontWeight: FontWeight.bold,
+            fontSize: 26,
           ),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(horizontalPad, 8, horizontalPad, 32),
-          child: ResponsiveCenter(
-            maxWidth: Responsive.maxContentWidth,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                Text(
-                  "Settings",
-                  style: GoogleFonts.inter(
-                    fontSize: Responsive.isCompact(context) ? 26 : 32,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF1C1B1B),
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 24),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            Text(
+              "Settings",
+              style: GoogleFonts.inter(
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1C1B1B),
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 24),
 
             // Profile Section
             Text(
@@ -194,8 +183,6 @@ class SettingsView extends GetView<SettingsController> {
           ],
         ),
       ),
-    ),
-  ),
-);
+    );
   }
 }
