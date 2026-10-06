@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-/// Single item tile in settings view
+import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_text_styles.dart';
+
+/// A setting with a wrapping value and an optional, real action.
 class SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? value;
+  final String? subtitle;
   final bool showChevron;
   final VoidCallback? onTap;
 
@@ -14,58 +17,80 @@ class SettingsTile extends StatelessWidget {
     required this.icon,
     required this.title,
     this.value,
+    this.subtitle,
     this.showChevron = true,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap ?? () {},
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-          child: Row(
-            children: [
-              Icon(
+    final isInteractive = onTap != null;
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isInteractive
+                    ? AppColors.primary.withValues(alpha: 0.06)
+                    : AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
                 icon,
-                size: 22,
-                color: const Color(0xFF5F6B7A),
+                size: 21,
+                color: isInteractive
+                    ? AppColors.primary
+                    : AppColors.onSurfaceVariant,
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF1C1B1B),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.bodySm.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.onSurface,
+                    ),
                   ),
-                ),
+                  if (value != null) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      value!,
+                      style: AppTextStyles.bodyLg.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle!,
+                      style: AppTextStyles.bodySm.copyWith(fontSize: 12),
+                    ),
+                  ],
+                ],
               ),
-              if (value != null) ...[
-                Text(
-                  value!,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFF5F6368),
-                  ),
-                ),
-                if (showChevron) const SizedBox(width: 6),
-              ],
-              if (showChevron)
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  size: 20,
-                  color: Color(0xFF718096),
-                ),
+            ),
+            if (showChevron && isInteractive) ...[
+              const SizedBox(width: 12),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: AppColors.outline,
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
   }
 }
-
